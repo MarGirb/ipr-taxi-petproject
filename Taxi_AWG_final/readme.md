@@ -66,15 +66,15 @@ Full-stack бизнес и системный анализ для pet-project "�
 ## 🏢 BRD
 
 ### Бизнес-контекст
-[Business Model Canvas](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Business_Model_Canvas.jpg)
-[Оргструктура и роли](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Оргструктура_и_роли.jpg)
+- [Business Model Canvas](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Business_Model_Canvas.jpg)
+- [Оргструктура и роли](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Оргструктура_и_роли.jpg)
 
 ### Структурные модели процессов
-[Value Added Chain Diagram](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/VAD.jpg)
-[IDEF0-A-0](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Процессы/IDEF0-A-0.jpg)
-[IDEF0-A0](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Процессы/IDEF0-A0.jpg)
-[IDEF-A2](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Процессы/IDEF0-A2.jpg)
-[IDEF0-A22](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Процессы/IDEF0-A22.jpg)
+- [Value Added Chain Diagram](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/VAD.jpg)
+- [IDEF0-A-0](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Процессы/IDEF0-A-0.jpg)
+- [IDEF0-A0](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Процессы/IDEF0-A0.jpg)
+- [IDEF-A2](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Процессы/IDEF0-A2.jpg)
+- [IDEF0-A22](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Процессы/IDEF0-A22.jpg)
 
 ### Функциональные модели процессов
 
@@ -88,9 +88,9 @@ Full-stack бизнес и системный анализ для pet-project "�
 | BPMN Аналитического уровня    | [А225. Отчет водителя](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Процессы/А225_Отчет_водителя.png)                            |        |
 
 ### Модели данных
-[Модель предметной области](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Данные/МПО.jpg)
-[Контекстная диаграмма](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Данные/Контекстная_диаграмма.jpg)
-[Диаграмма потоков данных DFD (Level 0)](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Данные/DFD_0.jpg)
+- [Модель предметной области](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Данные/МПО.jpg)
+- [Контекстная диаграмма](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Данные/Контекстная_диаграмма.jpg)
+- [Диаграмма потоков данных DFD (Level 0)](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Данные/DFD_0.jpg)
 
 ---
 
@@ -100,23 +100,23 @@ Full-stack бизнес и системный анализ для pet-project "�
 
 | Стиль                     | Диаграмма | Комментарий |
 | ------------------------------ | ------------------ | ------------ |
-|                                | [C4 Context]         |              |
-| Microservices Architecture     | С4 Container      |              |
-| Microservices Architecture     | C4 Component       |              |
-| Монолит                 | С4 Container      |              |
-| Монолит                 | C4 Component       |              |
-| Service-Based Architecture     | С4 Container      |              |
-| Service-Based Architecture     | C4 Component       |              |
+|                                | [C4 Context](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/architecture/С4_Context.png)         |              |
+| Microservices Architecture     | [С4 Container](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/architecture/C4_Containers_MSA.png)      | основное решение             |
+| Microservices Architecture     | [C4 Component](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/architecture/С4._Components.%20MSA.png)       | основное решение             |
+| Монолит                 | [С4 Container](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/architecture/С4_Containers.%20Монолит.png)      | вариант решения для рассмотрения заказчиком            |
+| Монолит                 | [C4 Component](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/architecture/С4_Сomponents_Монолит.png)       | вариант решения для рассмотрения заказчиком             |
+| Service-Based Architecture     | [С4 Container](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/architecture/С4_Containers.%20SBA.png)      | вариант решения для рассмотрения заказчиком             |
+| Service-Based Architecture     | [C4 Component](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/architecture/С4_Components.%20SBA.png)       | вариант решения для рассмотрения заказчиком             |
 
 ### Use Cases & Sequence Diagrams
 
-| Артефакт                                                                                                     | Текст | Sequence PNG | Sequence PlantUML |
-| -------------------------------------------------------------------------------------------------------------------- | ---------- | ------------ | ----------------- |
-| Use Case Diagram                                                                                                     |            |              |                   |
-| UC-1. Создание поездки по Заявке                                                              |            |              |                   |
-| UC-3. Авторизация клиента по номеру телефона                                       |            |              |                   |
-| UC-2.1 Аутентифкация клиента через OAuth 2.0. Google                                        |            |              |                   |
-| UC-2.2 Авторизация клиента, аутентифицированного  через OAuth 2.0. Google |            |              |                   |
+| Артефакт                                                                  | |  |  |
+| ------------------------------------------------------------------------- | ----- | ------------ | ----------------- |
+| Use Case Diagram                                                          |       |  [PNG](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/interactions/use%20cases/Use_Case_Diagram.png)            |                   |
+| UC-1. Создание поездки по Заявке                                          | [Текст](https://docs.google.com/document/d/1ZqJkvjLKTLqCCJzmj1DiIwN4VM1ZnYkCHbecq9s-a0c/edit?usp=sharing)      | [Sequence PNG](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/interactions/sequence_diagrams/UC-1_Создание_Поездки_по_Заявке_(route_to_start_status%20%3D%20success).png)             | [Sequence PlantUML ](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/interactions/sequence_diagrams/UC-1_Создание_поездки_по_Заявке.plantuml)                  |
+| UC-3. Авторизация клиента по номеру телефона                              |       | [Sequence PNG](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/interactions/sequence_diagrams/UC%20-5_Авторизация_клиента_по_номеру_телефона.png)             | [Sequence PlantUML](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/interactions/sequence_diagrams/UC%20-5_Авторизация_клиента_по_номеру_телефона.plantuml)                  |
+| UC-2.1 Аутентифкация клиента через OAuth 2.0. Google                      | [Текст](https://docs.google.com/document/d/1We7lsw3FNsDj092ztRCpkdklHSzidylnt3R_bxI74DU/edit?usp=drive_link)      | [Sequence PNG](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/interactions/sequence_diagrams/UC-2_Аутентифкация_клиента_через_OAuth_2_0_Google.png)             | [Sequence PlantUML ](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/interactions/sequence_diagrams/UC-2_Аутентифкация_клиента_через_OAuth_2_0_Google.plantuml)                  |
+| UC-2.2 Авторизация клиента, аутентифицированного  через OAuth 2.0. Google | [Текст](https://docs.google.com/document/d/1xviqh3xp5lOp7Rk8CkKzaOAa_0-QT2CP3HJOTyDjGNs/edit?usp=drive_link)      | [Sequence PNG](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/interactions/sequence_diagrams/UC-4_Авторизация_клиента_аутентифицированного_через_OAuth_2_0_Google.png)             | [Sequence PlantUML](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/interactions/sequence_diagrams/UC-4_Авторизация_клиента_аутентифицированного%20_через_OAuth_2_0_Google.plantuml)                  |
 
 ### API
 
