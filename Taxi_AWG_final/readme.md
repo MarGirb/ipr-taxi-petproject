@@ -66,41 +66,31 @@ Full-stack бизнес и системный анализ для pet-project "�
 ## 🏢 BRD
 
 ### Бизнес-контекст
-
-| Артефакт                     | Ссылка |
-| ------------------------------------ | ------------ |
-| Business Model Canvas                |              |
-| Оргструктура и роли |              |
-|                                      |              |
+[Business Model Canvas](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Business_Model_Canvas.jpg)
+[Оргструктура и роли](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Оргструктура_и_роли.jpg)
 
 ### Структурные модели процессов
-
-| Артефакт          | Ссылка |
-| ------------------------- | ------------ |
-| Value Added Chain Diagram |              |
-| IDEF0-А-0                |              |
-| IDEF0-А0                 |              |
-| IDEF0-А2                 |              |
-| IDEF0-А22                |              |
+[Value Added Chain Diagram](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/VAD.jpg)
+[IDEF0-A-0](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Процессы/IDEF0-A-0.jpg)
+[IDEF0-A0](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Процессы/IDEF0-A0.jpg)
+[IDEF-A2](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Процессы/IDEF0-A2.jpg)
+[IDEF0-A22](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Процессы/IDEF0-A22.jpg)
 
 ### Функциональные модели процессов
 
-| Артефакт                                     | Процесс                                                                        | Ссылка |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------- | ------------ |
-| BPMN Согласовательного уровня | А22. Поездка по заявке                                                |              |
-| BPMN Аналитического уровня       | А221. Оформление заявки клиентом                             |              |
-| BPMN Аналитического уровня       | А222. Назначение водителя для выполнения Заявки |              |
-| BPMN Аналитического уровня       | А223. Выполнение поездки                                            |              |
-| BPMN Аналитического уровня       | А224. Оплата поездки                                                    |              |
-| BPMN Аналитического уровня       | А225. Отчет водителя                                                    |              |
+| Артефакт                      | Процесс                                        
+| ----------------------------- | ----------------------------------------------- 
+| BPMN Согласовательного уровня | [А22. Поездка по заявке](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Процессы/А22_Поездка_по_заявке_Согласовательный_уровень.png)                          |        |
+| BPMN Аналитического уровня    | [А221. Оформление заявки клиентом](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Процессы/А221_Оформление_заявки_клиентом.png)                |        |
+| BPMN Аналитического уровня    | [А222. Назначение водителя для выполнения Заявки](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Процессы/А222_Назначение_водителя_для_выполнения_Заявки.png) |        |
+| BPMN Аналитического уровня    | [А223. Выполнение поездки](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Процессы/А223_Выполнение_поездки.png)                        |        |
+| BPMN Аналитического уровня    | [А224. Оплата поездки](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Процессы/А224_Оплата_поездки.png)                            |        |
+| BPMN Аналитического уровня    | [А225. Отчет водителя](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Процессы/А225_Отчет_водителя.png)                            |        |
 
 ### Модели данных
-
-| Артефакт                                             | Ссылка |
-| ------------------------------------------------------------ | ------------ |
-| Модель предметной области             |              |
-| Контекстная диаграмма                    |              |
-| Диаграмма потоков данных DFD (Level 0) |              |
+[Модель предметной области](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Данные/МПО.jpg)
+[Контекстная диаграмма](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Данные/Контекстная_диаграмма.jpg)
+[Диаграмма потоков данных DFD (Level 0)](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/BRD/Данные/DFD_0.jpg)
 
 ---
 
@@ -108,17 +98,15 @@ Full-stack бизнес и системный анализ для pet-project "�
 
 ### Архитектура
 
-| Стиль                     | Диаграмма | Ссылка |
+| Стиль                     | Диаграмма | Комментарий |
 | ------------------------------ | ------------------ | ------------ |
-|                                | C4 Context         |              |
+|                                | [C4 Context]         |              |
+| Microservices Architecture     | С4 Container      |              |
+| Microservices Architecture     | C4 Component       |              |
 | Монолит                 | С4 Container      |              |
 | Монолит                 | C4 Component       |              |
 | Service-Based Architecture     | С4 Container      |              |
 | Service-Based Architecture     | C4 Component       |              |
-| Microservices Architecture     | С4 Container      |              |
-| Microservices Architecture     | C4 Component       |              |
-| Service-Oriented Architecture  | С4 Container      |              |
-| Service-Oriented  Architecture | C4 Component       |              |
 
 ### Use Cases & Sequence Diagrams
 
