@@ -1,0 +1,66 @@
+@startuml
+skinparam sequenceMessageAlign center
+skinparam ParticipantPadding 20
+
+actor Пользователь
+participant "ClientApp" as ПК
+participant AuthService
+participant  "CustomerService" as ClientService
+participant Google
+
+autonumber
+
+title UC-4. Авторизация клиента, аутентифицированного  через  OAuth 2.0. Google
+
+== Аутентификация клиента ==
+
+ПК -> ПК : сохраняет auth_token
+ПК -> ПК : получает user_id из auth_token
+
+alt auth_state = phone_required
+
+ПК -> ClientService : Данные для заполнения формы верификации телефона  (auth_token, customer.id) \n GET /customers/{customer_id}
+ClientService --> ПК :  name, email, email_verified, picture, phone_verified
+ПК -> Пользователь : Форму ввода телефона и требование верификации
+Пользователь -> ПК : Вводит номер телефона
+ПК -> AuthService : Передаёт auth_token, phone, customer.id \n POST /auth/phone/authtoken
+
+else auth_state = phone_verification_required
+
+ПК -> ClientService : Данные для заполнения формы верификации телефона  (auth_token, customer.id) \n GET /customers/{customer_id}
+ClientService --> ПК :  name, email, email_verified, picture, phone_verified
+ПК -> Пользователь : Форму ввода телефона и требование верификации
+ПК -> AuthService : Передаёт auth_token, phone, customer.id \n POST /auth/phone/authtoken
+
+end
+
+AuthService -> AuthService : Запуск UC-3 Верификация телефона
+AuthService -> ClientService : phone, phone_verified = true
+ClientService -> ClientService : Обновляет профиль клиента (profile_state = profile_completed)
+
+
+== Авторизация клиента ==
+
+ПК -> AuthService : Запрос на получение access_token \n POST /auth/accesstoken (customer.id)
+
+AuthService -> ClientService : Check profile (customer.id)
+ClientService --> AuthService : (customer.id, customer.phone, profile_state  = profile_completed)
+
+AuthService -> AuthService : Генерирует access_token и refresh_token
+note right of AuthService
+access_token JWT claims:
+{
+  "sub": "customer_id",
+  "phone": "customer.phone",
+  "name": "customer.name",
+  "email": "customer.email",
+  "exp": 1717858800
+}
+end note
+AuthService --> ПК : access_token, refresh_token, данные
+ПК -> ПК : сохраняет access_token, refresh_token,
+ПК -> ClientService : Запрашивает профиль клиента (access_token, customer.id) \n GET /customers/{customer_id}
+ClientService --> ПК : Клиентский профиль
+ПК -> Пользователь : Успех авторизации
+
+@enduml

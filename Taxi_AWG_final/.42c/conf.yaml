@@ -1,0 +1,3 @@
+apis:
+  SRS/interactions/api/swagger.yaml:
+    alias: awg-taxi-service-project

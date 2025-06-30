@@ -1,0 +1,793 @@
+openapi: 3.0.0
+servers:
+# Added by API Auto Mocking Plugin
+- description: SwaggerHub API Auto Mocking
+  url: https://virtserver.swaggerhub.com/VICHIGOVAANNA/Internet-shop/2.0.0
+info:
+  description: 'demo-project "Сервис такси" - условная региональная служба такси'
+  version: 2.0.0
+  title: API AWG Taxi Service
+  contact:
+    email: maria.girshberg@gmail.com
+
+tags:
+- name: authorisation
+  description: Авторизация
+- name: customers
+  description: Операции с клиентами
+- name: trips
+  description: Операции с поездками
+- name: requests
+  description: Операции с заявками
+- name: trip-fares
+  description: Операции с тарифами на поездки
+- name: addresses
+  description: Операции с адресами
+
+paths:
+  /auth/methods:
+    get:
+      tags:
+      - authorisation
+      summary: Получение доступных методов авторизации
+      responses:
+        '200':
+          description: OK
+  /auth/google/redirect/{uuid}:
+    get:
+      tags:
+      - authorisation
+      summary: Получение authorization URL для OAuth 2.0 Google
+      parameters:
+      - name: uuid
+        in: path
+        description: Уникальный идентификатор пользователя
+        required: true
+        schema:
+          type: string
+          example: '550e8400-e29b-41d4-a716-446655440000'
+      responses:
+        '200':
+          description: OK
+
+  /auth/authtoken/google:
+    post:
+      tags:
+      - authorisation
+      summary: Получение auth_token при OAuth 2.0 Google
+      responses:
+        '200':
+          description: OK
+
+  /auth/authtoken/password:
+    post:
+      tags:
+      - authorisation
+      summary: Получение auth_token по логину и паролю
+      responses:
+        '200':
+          description: OK
+
+  /auth/temptoken/phone/{uuid}:
+    post:
+      tags:
+      - authorisation
+      summary: Запрос на верификацию номера телефона
+      responses:
+        '200':
+          description: OK
+      parameters:
+      - name: uuid
+        in: path
+        description: ID
+        required: true
+        schema:
+          type: string
+
+  /auth/authtoken/phone:
+    post:
+      tags:
+      - authorisation
+      summary: Получение auth_token по номеру телефона
+      responses:
+        '200':
+          description: OK
+
+  /auth/accesstoken:
+    post:
+      tags:
+      - authorisation
+      summary: Запрос на авторизацию
+      responses:
+        '200':
+          description: OK
+
+  /customers:
+    get:
+      tags:
+      - customers
+      summary: Получение списка клиентов
+      responses:
+        '200':
+          description: OK
+
+    post:
+      tags:
+      - customers
+      summary: Создание клиента
+      responses:
+        '201':
+          description: OK
+
+  /customers/{customer_id}:
+    get:
+      tags:
+      - customers
+      summary: Чтение данных конкретного клиента
+      responses:
+        '200':
+          description: OK
+      parameters:
+      - name: customer_id
+        in: path
+        description: ID
+        required: true
+        schema:
+          type: string
+
+    patch:
+      tags:
+      - customers
+      summary: Изменеие данных клиента
+      x-notes: на MVP доступно только изменение customer.name
+      responses:
+        '200':
+          description: OK
+      parameters:
+      - name: customer_id
+        in: path
+        description: ID
+        required: true
+        schema:
+          type: string
+
+    delete:
+      tags:
+      - customers
+      summary: Удаление данных клиента
+      x-dev-notes: Логическое удаление - устанавливается customer.is_deleted = true
+      responses:
+        '200':
+          description: OK
+      parameters:
+      - name: customer_id
+        in: path
+        description: ID
+        required: true
+        schema:
+          type: string
+
+  /customers/{customer_id}/requests:
+    get:
+      tags:
+      - requests
+      - customers
+      summary: Получение списка Заявок клиента
+      responses:
+        '200':
+          description: OK
+      parameters:
+      - name: customer_id
+        in: path
+        description: ID
+        required: true
+        schema:
+          type: string
+
+  /customers/{customer_id}/trips:
+    get:
+      tags:
+      - trips
+      - customers
+      summary: Получение списка Поездок клиента
+      parameters:
+      - name: customer_id
+        in: path
+        required: true
+        description: ID
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+
+  /requests:
+    post:
+      tags:
+      - requests
+      summary: Создание заявки
+      responses:
+        '201':
+          description: OK
+
+    get:
+      tags:
+      - requests
+      summary: Получение списка заявок
+      parameters:
+      - name: request.status_id
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: request.created_at
+        in: query
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: OK
+
+  /requests/{request_id}:
+    get:
+      tags:
+      - requests
+      summary: Получение списка Заявок
+      responses:
+        '200':
+          description: OK
+      parameters:
+      - name: request_id
+        in: path
+        description: ID
+        required: true
+        schema:
+          type: string
+
+    patch:
+      tags:
+      - requests
+      summary: Изменение деталей Заявки
+      x-notes: Только для правки текстовых полей заявки (например, comment). Не использовать для изменения статуса, времени, адресов, водителя
+      responses:
+        '200':
+          description: OK
+      parameters:
+      - name: request_id
+        in: path
+        description: ID
+        required: true
+        schema:
+          type: string
+
+    put:
+      tags:
+      - requests
+      summary: Изменение статуса Заявки
+      x-notes: Эндпоинт используется в сценариях <Оформление заявки клиентом, Подтверждение заявки диспетчером, Назначение водителя на заявку, Отклонение заявки по таймауту назначения водителя, Отказ водителя от заявки, Отмена заявки>
+      responses:
+        '200':
+          description: OK
+      parameters:
+      - name: request_id
+        in: path
+        description: ID
+        required: true
+        schema:
+          type: string
+
+  /requests/{request_id}/request-status-history:
+    get:
+      tags:
+      - requests
+      summary: Чтение истории статусов Заявки
+      responses:
+        '200':
+          description: OK
+      parameters:
+      - name: request_id
+        in: path
+        description: ID
+        required: true
+        schema:
+          type: string
+
+  /trips:
+    get:
+      tags:
+      - trips
+      summary: Получение списка Поездок
+      responses:
+        '201':
+          description: OK
+    post:
+      tags:
+      - trips
+      summary: Создание поездки без заявки
+      responses:
+        '201':
+          description: OK
+
+  /trips/{request_id}/trip:
+    post:
+      tags:
+      - trips
+      - requests
+      summary: Создание поездки по заявке
+      parameters:
+      - name: request_id
+        in: path
+        description: валидный GUID Заявки
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - driver_id
+              - current_location
+              properties:
+                current_location:
+                  type: string
+                  description: координаты текущего местоположения водителя [долгота, широта] в формате WGS-84
+                  example: '134.854789 -25.8280235'
+                current_address:
+                  type: string
+                  description: Адрес текущего местоположения водителя в текстовом формате
+                  example: 'г. Москва, ул. Сходненская, д. 1'
+                driver_id:
+                  type: string
+                  description: валидный GUID водителя
+                  example: 'f47ac10b-58cc-4372-a567-0e02b2c3d479'
+      responses:
+        '201':
+          description: OK
+          x-message: Поездка создана успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - id
+                - driver_id
+                - number
+                - status
+                - trip_fare
+                properties:
+                  trip:
+                    $ref: '#/components/schemas/trip_info'
+                  ride_status:
+                    type: string
+                    enum:
+                    - success
+                    - failed
+                    example: 'success'
+
+        '206':
+          description: route_to_start_unavailable
+          x-message: Сервис расчета маршрута недоступен. Не удалось получить расчет маршрута, километража и времени до начальной точки
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - id
+                - driver_id
+                - number
+                - status
+                - trip_fare
+                properties:
+                  trip:
+                    $ref: '#/components/schemas/trip_info_preride_without_navi'
+                  ride_status:
+                    type: string
+                    enum:
+                    - success
+                    - failed
+                    example: 'failed'
+
+        '503':
+          description: request_unavailable
+          x-detail: Невозможно подтвердить актуальность заявки. Необходимо связаться с клиентом до начала движения
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: Тип ошибки (для трассировки)
+                    example: 'request_unavailable'
+                  status:
+                    type: string
+                    description: код ответа. Нужен для того, чтобы вся модель данных могла быть разобрана позднее без контекста http-ответа
+                    example: '503'
+                  title:
+                    type: string
+                    description: Краткое человекочитаемое описание ошибки
+                    example: 'Невозможно подтвердить статус Заявки'
+                  detail:
+                    type: string
+                    description: Детализация ошибки, может содержать данные из запроса, поясняющие суть ошибки
+                    example: 'RequestService недоступен. Невозможно подтвердить актуальность заявки [request_id]. Код трассировки [код, по которому можно найти запись в GrayLog]'
+                  message:
+                    type: string
+                    description: текст ошибки, который может быть выведен пользователю
+                    example: 'Не удалось создать поездку из-за недоступности проверки заявки. Попробуйте еще раз'
+        '409':
+          description: wrong_driver
+          x-title: В Заявке другой водитель
+          x-detail: Создать поездку на основании заявки может только указанный в ней водитель
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: Тип ошибки (для трассировки)
+                    example: 'wrong_driver'
+                  status:
+                    type: string
+                    description: код ответа. Нужен для того, чтобы вся модель данных могла быть разобрана позднее без контекста http-ответа
+                    example: '409'
+                  title:
+                    type: string
+                    description: Краткое человекочитаемое описание ошибки
+                    example: 'В Заявке другой водитель'
+                  detail:
+                    type: string
+                    description: Детализация ошибки, может содержать данные из запроса, поясняющие суть ошибки
+                    example: '[driver_id] не является водителем, указанным в Заявке [request_id]. Код трассировки [код, по которому можно найти запись в GrayLog]'
+                  message:
+                    type: string
+                    description: текст ошибки, который может быть выведен пользователю
+                    example: 'Создать поездку на основании заявки может только указанный в ней водитель'
+        '416':
+          description: invalid_start_location
+          x-title: Вне зоны обслуживания
+          x-detail: Для создания поездки водитель должен находиться в зоне обслуживания
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: Тип ошибки (для трассировки)
+                    example: 'invalid_start_location'
+                  status:
+                    type: string
+                    description: код ответа. Нужен для того, чтобы вся модель данных могла быть разобрана позднее без контекста http-ответа
+                    example: '416'
+                  title:
+                    type: string
+                    description: Краткое человекочитаемое описание ошибки
+                    example: 'Вне зоны обслуживания'
+                  detail:
+                    type: string
+                    description: Детализация ошибки, может содержать данные из запроса, поясняющие суть ошибки
+                    example: 'Для создания поездки водитель должен находиться в зоне обслуживания. [current_location] Находится вне зоны'
+                  message:
+                    type: string
+                    description: текст ошибки, который может быть выведен пользователю
+                    example: 'Для создания поездки водитель должен находиться в зоне обслуживания'
+
+        '403':
+          description: wrong_driver_status
+          x-title: Неверный статус водителя
+          x-detail: Создание Поездки доступно только для водителей в статус Свободен / На перерыве
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: Тип ошибки (для трассировки)
+                    example: 'wrong_driver_status'
+                  status:
+                    type: string
+                    description: код ответа. Нужен для того, чтобы вся модель данных могла быть разобрана позднее без контекста http-ответа
+                    example: '403'
+                  title:
+                    type: string
+                    description: Краткое человекочитаемое описание ошибки
+                    example: 'Неверный статус водителя'
+                  detail:
+                    type: string
+                    description: Детализация ошибки, может содержать данные из запроса, поясняющие суть ошибки
+                    example: 'Текущий статус для [driver_id] [driver.status]. Создание поездки доступно только в статусах [available], [break_time]. Код трассировки [код, по которому можно найти запись в GrayLog]'
+                  message:
+                    type: string
+                    description: текст ошибки, который может быть выведен пользователю
+                    example: 'Создание Поездки доступно только для водителей в статус Свободен / На перерыве'
+        '422':
+          description: trip_already_exists
+          x-title: Поездка уже создана
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: Тип ошибки (для трассировки)
+                    example: 'trip_already_exists'
+                  status:
+                    type: string
+                    description: код ответа. Нужен для того, чтобы вся модель данных могла быть разобрана позднее без контекста http-ответа
+                    example: '422'
+                  title:
+                    type: string
+                    description: Краткое человекочитаемое описание ошибки
+                    example: 'Поездка уже создана'
+                  detail:
+                    type: string
+                    description: Детализация ошибки, может содержать данные из запроса, поясняющие суть ошибки
+                    example: 'По {request_id} уже создана поездка {trip_id}. Повторное создание поездке запрещено'
+                  message:
+                    type: string
+                    description: текст ошибки, который может быть выведен пользователю
+                    example: 'По заявке уже создана поездка. Повторное создание поездки запрещено'
+        '424':
+          description: wrong_request_status
+          x-title: Неверный статус заявки
+          x-detail: Текущий статус Заявки отличается от  Назначен водитель. Создание поездки для заявки в любом другом статусе недоступно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: Тип ошибки (для трассировки)
+                    example: 'wrong_request_status'
+                  status:
+                    type: string
+                    description: код ответа. Нужен для того, чтобы вся модель данных могла быть разобрана позднее без контекста http-ответа
+                    example: '424'
+                  title:
+                    type: string
+                    description: Краткое человекочитаемое описание ошибки
+                    example: 'Неверный статус заявки'
+                  detail:
+                    type: string
+                    description: Детализация ошибки, может содержать данные из запроса, поясняющие суть ошибки
+                    example: '[request_id.status]: "declined" отличается от "assigned". Создание поездки недоступно. Код трассировки [код, по которому можно найти запись в GrayLog]'
+                  message:
+                    type: string
+                    description: текст ошибки, который может быть выведен пользователю
+                    example: 'Текущий статус Заявки отличается от  Назначен водитель. Создание поездки недоступно'
+        '504':
+          description: system_offline
+          x-title: Сервис не отвечает
+          x-detail: Один из внутренних сервисов не ответил в отведённое время. Ответ не может быть сформирован штатно. Код трассировки [код, по которому можно найти запись в GrayLog]
+
+  /trips/{trip_id}:
+    get:
+      tags:
+      - trips
+      summary: Чтение данных поездки
+      responses:
+        '200':
+          description: OK
+      parameters:
+      - name: trip_id
+        in: path
+        required: true
+        description: ID
+        schema:
+          type: string
+
+    put:
+      tags:
+      - trips
+      summary: Изменение статуса поездки
+      x-dev-notes: Эндпоинт используется в сценариях <Водитель по Заявке прибыл в начальную точку, Водитель отменил поездку по заявке, Водитель начал выполнение Заявки, Водитель по Заявке  прибыл в конечную точку, Водитель без заявки прибыл в конечную точку>
+      responses:
+        '200':
+          description: OK
+      parameters:
+      - name: trip_id
+        in: path
+        description: ID
+        required: true
+        schema:
+          type: string
+
+  /trips/{trip_id}/trip-status-history:
+    get:
+      tags:
+      - trips
+      summary: Чтение истории статусов поездки
+      responses:
+        '200':
+          description: OK
+      parameters:
+      - name: trip_id
+        required: true
+        in: path
+        schema:
+          type: string
+
+  /trip-fares:
+    get:
+      tags:
+      - trip-fares
+      summary: Получение списка тарифов
+      responses:
+        '200':
+          description: OK
+
+  /trip-fares/{trip-fare_id}:
+    get:
+      tags:
+      - trip-fares
+      summary: Чтение данных Тарифа
+      responses:
+        '200':
+          description: OK
+      parameters:
+      - name: trip-fare_id
+        in: path
+        required: true
+        schema:
+          type: string
+
+  /addresses:
+    get:
+      tags:
+      - addresses
+      summary: Получение списка адресов
+      responses:
+        '200':
+          description: OK
+
+components:
+  schemas:
+    trip_info:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 'a3bb189e-8bf9-3888-9912-ace4e6543002'
+        created_at:
+          type: string
+          format: date-time
+          example: '2025-04-30 11:41:00+03'
+        request_id:
+          type: string
+          description: валидный GUID Заявки
+          format: GUID длиной 36 символов вместе с разделителями
+          example: 'a3bb189e-8bf9-3888-9912-ace4e6543002'
+        phone:
+          type: string
+          description: Номер телефона клиента
+          example: '71234567890'
+        status:
+          type: string
+          description: наименование текущего статуса
+          example: 'Started'
+        status_set_at:
+          type: string
+          format: date-time
+          example: '2025-04-30 11:41:00+03'
+        request_ride:
+          description: Маршрут поездки до данным заявки
+          allOf:
+          - $ref: '#/components/schemas/ride_info_basic'
+          - $ref: '#/components/schemas/ride_duration_distance'
+        pre_ride:
+          description: Маршрут Подача
+          allOf:
+          - $ref: '#/components/schemas/ride_info_basic'
+          - $ref: '#/components/schemas/ride_duration_distance'
+          - $ref: '#/components/schemas/ride_info_navi'
+
+    trip_info_preride_without_navi:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 'a3bb189e-8bf9-3888-9912-ace4e6543002'
+        created_at:
+          type: string
+          format: date-time
+          example: '2025-04-30 11:41:00+03'
+        request_id:
+          type: string
+          description: валидный GUID Заявки
+          format: GUID длиной 36 символов вместе с разделителями
+          example: 'a3bb189e-8bf9-3888-9912-ace4e6543002'
+        phone:
+          type: string
+          description: Номер телефона клиента
+          example: '71234567890'
+        status:
+          type: string
+          description: наименование текущего статуса
+          example: 'Started'
+        status_set_at:
+          type: string
+          format: date-time
+          example: '2025-04-30 11:41:00+03'
+        request_ride:
+          description: Маршрут поездки до данным заявки
+          allOf:
+          - $ref: '#/components/schemas/ride_info_basic'
+          - $ref: '#/components/schemas/ride_duration_distance'
+        pre_ride:
+          description: Маршрут Подача
+          allOf:
+          - $ref: '#/components/schemas/ride_info_basic'
+
+    ride_duration_distance:
+      type: object
+      properties:
+        duration:
+          type: number
+          description: время в пути
+          format: целое число секунд
+          example: 600
+        distance:
+          type: number
+          description: целое число секунд
+          format: целое число метров
+          example: 3457
+
+    ride_info_basic:
+      type: object
+      properties:
+        desired_start_time:
+          type: string
+          description: Желаемая дата и время начала поездки
+          format: timestamp with time zone
+          example: '2025-05-30 21:41:00+03'
+        start_address:
+          $ref: '#/components/schemas/address'
+        finish_address:
+          $ref: '#/components/schemas/address'
+        trip_fare:
+          type: string
+          description: Уникальный код тарифа
+          example: 'MSK-BISDAY-202504-V2'
+        driver_id:
+          type: string
+          description: валидный GUID Водителя
+          format: GUID длиной 36 символов вместе с разделителями
+          example: 'f47ac10b-58cc-4372-a567-0e02b2c3d479'
+        cost:
+          description: стоиомсть поездки
+          type: number
+          example: 320.5
+
+    ride_info_navi:
+      type: object
+      properties:
+        navi:
+          type: string
+          description: URL для построения маршрута в Яндекс Навигаторе
+          example: 'yandexnavi://build_route_on_map?lat_from=55.7515&lon_from=37.5736&lat_to=55.7558&lon_to=37.6176'
+
+    address:
+      type: object
+      required:
+      - manual_address
+      properties:
+        latitude:
+          type: string
+          description: Географическая широта
+          example: '55.752220'
+        longitude:
+          type: string
+          description: Географическая долгота
+          example: '37.586223'
+        manual_address:
+          type: string
+          description: человекочитаемый адрес
+          example: 'Москва, ул. Новый Арбат, д. 7'

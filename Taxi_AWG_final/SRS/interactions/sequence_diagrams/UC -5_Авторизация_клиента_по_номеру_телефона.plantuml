@@ -1,0 +1,78 @@
+@startuml
+actor Client
+participant "ClientApp" as App
+participant "AuthService" as Auth
+participant "SMS Service" as SMS
+participant "CustomerService" as ClientSrv
+
+== Phone Number Submission ==
+Client -> App : Enter phone number
+App -> Auth : Submit phone number \n /auth/phone/temptoken/{uuid}
+Auth ->> ClientSrv : Lookup client by phone number
+
+alt 1 client exists / 0 clients exist
+ClientSrv ->> Auth : status=0 / status = 1
+Auth -> Auth : Generate verification code
+Auth -> SMS : Send SMS with code
+Auth --> App : temp token
+SMS -> Client : Deliver verification code via SMS
+
+else 1+ clients exist
+ClientSrv ->> Auth : status=2
+Auth --> App : login and password required
+App --> Client :Show login and password form
+end
+== Code Verification ==
+Client -> App : Enter received code
+App -> Auth : Submit code for verification \n POST /auth/phone/authtoken
+Auth -> Auth : Verify code
+Auth ->> ClientSrv : Confirm or create client identity (phone + phone_verified=true)
+ClientSrv -> ClientSrv : Create profile \n (profile_state = profile_completition_requiered)
+ClientSrv ->> Auth : Confirmation success (client.id, mode=create, \n profile_state = profile_completition_requiered)
+
+Auth -> Auth : Generates AuthToken JWT 
+note right of Auth
+JWT claims:
+{
+  "sub": "client_id",
+  "mode": "create",
+  "sid": "uuid", 
+  "auth_state": "profile_completition_requiered",
+  "exp": 1749449308
+}
+end note
+Auth --> App : AuthToken JWT
+
+== Authorization ==
+App -> App : сохраняет auth_token
+App -> App : получает user_id из auth_token
+App -> ClientSrv : Request client profile (AuthToken , client.id) \n GET customers/{customer_id}/auth
+ClientSrv --> App : Client profile 
+App --> Client : Show profile and unauthorized state
+Client -> App : Mandatory client data
+App -> ClientSrv : Submit mandatory client data (AuthToken ) \n PATCH /customers/{customer_id}
+ClientSrv --> App : Client profile updated (client.id, client.phone, client.phone_verified) 
+
+App -> Auth : Request access token \n POST /auth/accesstoken (client.id)
+
+Auth ->> ClientSrv : Check profile (client.id)
+ClientSrv ->> Auth : (client.id, client.phone, profile_state  =profile_completed)
+
+
+Auth -> Auth : Generates access token JWT, refresh token JWT 
+note right of Auth
+JWT claims:
+{
+  "sub": "client_id",
+  "phone": "client.phone"
+  "exp": 1717858800,
+  "email": "customer.email",
+  "name": "customer.name",
+}
+end note
+Auth --> App : Return access token JWT, refresh token JWT
+App -> ClientSrv: Request client profile (access token JWT, client.id) \n GET /customers/{customer_id}
+
+ClientSrv --> App : Client profile 
+App --> Client : Show authorized state and profile
+@enduml

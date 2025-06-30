@@ -1,0 +1,122 @@
+@startuml
+actor Driver
+participant "Driver App (МП)" as App
+participant "TripRequestService"
+participant "TripService"
+participant "DriverCarService" as DriverService
+participant "AddressService"
+participant "RideService"
+participant "FareService"
+participant "1С : ERP" as ERP
+
+title UC-1. Создание Поездки по Заявке (route_to_start_status = success)
+
+Driver -> App : Создать поездку
+App -> App : Определяет геолокацию
+
+alt Геолокация не определена 
+App --> Driver : ввести адрес
+Driver -> App : Вводит адрес
+end
+App -> TripService : Создать поездку \n POST api/v1/trips/{request_id}/trip
+
+== Определение доступности создания поездки ==
+
+TripService ->> TripRequestService : получает данные Заявки (request_id)
+TripRequestService ->> TripService : данные Заявки
+
+alt Заявка не получена
+TripService ->> TripRequestService : Создание Поездки неуспешно
+TripService --> App : 503 request_unavailable
+App --> Driver : Создание Поездки недоступно
+end
+
+TripService -> TripService : Проверка - нет активных поездок
+
+alt найдены активные Поездки
+TripService --> App : 422 trip_already_exists
+App --> Driver : Создание Поездки недоступно
+end
+
+TripService ->> RideService : получает маршрут Заявки (request_id)
+RideService ->> TripService : данные маршрута Заявки
+
+TripService -> TripService : Проверка -  driver_id совпадает
+
+alt trip_request.driver_id не соотвествует [driver.id]
+TripService ->> TripRequestService : Запрос на изменение водителя
+TripRequestService ->> TripService : Водитель изменен
+
+else подтверждение изменения водителя не получено
+TripService ->> TripRequestService : Создание Поездки неуспешно
+TripService --> App : 409 wrong_driver
+App --> Driver : Создание Поездки недоступно
+end
+
+TripService ->> DriverCarService : получает статус водителя (driver_id)
+DriverCarService ->> TripService : статус водителя
+TripService -> TripService : Проверка статуса водителя
+
+alt driver.status  не = Available/Break time
+TripService ->> TripRequestService : Создание Поездки неуспешно
+TripService --> App : 403 wrong_driver_status
+App --> Driver : Создание Поездки недоступно
+end
+
+TripService -> TripService : Создает Поездка 
+TripService -> TripService : trip.status = Started
+
+== Создание маршрута подачи ==
+
+TripService ->> RideService : создать маршрут подачи \n (trip_id, request_id, Геолокация водителя)
+
+RideService ->> AddressService : запрашивает адрес по координатам
+AddressService -> AddressService : поиски адреса по координатам
+AddressService -> ЯндексГеокодер: координаты
+ЯндексГеокодер --> AddressService : адрес
+AddressService -> AddressService : сохраняет адрес
+AddressService ->> RideService : address
+
+alt trip_route_to_start.start_address за пределами зоны обслуживания
+RideService ->> TripService : ride_start_id out of service area
+TripService ->> TripRequestService : Создание Поездки неуспешно
+TripService --> App : 416 invalid_start_location
+App --> Driver : Создание Поездки недоступно
+end
+
+== Расчет маршрута подачи ==
+
+RideService -> ЯндексРасстояния : Рассчитать расстояние и время Подачи \n  {time, latitude, longitude}
+ЯндексРасстояния --> RideService : {distance, duration}
+RideService -> RideService : записывает {distance, duration}
+
+alt {distance, duration} не получено
+RideService -> RideService : distance = null \n duration = null
+end
+
+RideService -> ЯндексМаршруты : Получить маршрут  \n  {time, latitude, longitude}
+ЯндексМаршруты --> RideService : {navi_url}
+RideService -> RideService : записывает {navi_url}
+
+== Определение тарифа ==
+RideService ->> FareService : Запрашивает тариф Подачи \n  {start_address, finish_address, distance, duration}
+FareService ->> RideService : fare_id
+RideService -> RideService : записывает trip_fare_id
+
+== Оповещение смежных сервисов о содании Поездки ==
+
+RideService ->> TripService : создана Поездка \n (данные Поездки)
+TripService ->> TripRequestService : создана Поездка \n (данные Поездки)
+TripRequestService -> TripRequestService : обновляет Заявку
+
+TripService ->> Analytics : создана Поездка \n (данные Поездки)
+TripService ->> ERP : создана Поездка \n (данные Поездки)
+
+TripService ->> DriverCarService : водитель выполняет Поездку \n (driver.id )
+DriverCarService -> DriverCarService : записывает driver.status = On trip
+
+== Ответ клиенту ==
+TripService --> App : 201 ОК данные Поездки и Подачи
+App --> Driver : Детали поездки и Подачи
+
+@enduml

@@ -1,0 +1,100 @@
+@startuml
+skinparam sequenceMessageAlign center
+skinparam ParticipantPadding 20
+
+actor Пользователь
+participant "ClientApp" as ПК
+participant AuthService
+participant  "CustomerService" as ClientService
+participant Google
+
+autonumber
+
+title UC-2. Аутентифкация клиента через OAuth 2.0. Google
+
+== аутентификации и авторизация на сервере Google OAuth 2.0  ==
+
+Пользователь -> ПК : Авторизоваться через Google
+ПК -> AuthService : Передаёт uuid, запрашивает auth_url \n GET /auth/google/redirect/{uuid}
+AuthService -> AuthService : Генерирует state, сохраняет uuid+state
+AuthService -> AuthService : формирует auth_url
+
+AuthService --> ПК : Возвращает auth_url
+
+ПК --> Пользователь : Перенаправляет по auth_url
+Пользователь -> Google : Проходит авторизацию
+
+Google --> ПК : redirect_uri?code=...&state=...
+ПК -> AuthService : Передаёт uuid, code, state \n POST /auth/google/authtoken
+AuthService -> AuthService : Валидирует state
+
+alt Пользователь авторизовался в Google, но не дал небходимые разрешения
+Google --> ПК : redirect_uri?error=access_denied&state=...
+ПК -> AuthService : Передаёт uuid, code, error=access_denied
+AuthService -> AuthService : Валидирует state
+AuthService --> ПК : 403 Forbidden
+ПК --> Пользователь : доступные способы авторизации, кроме Google
+end
+
+==Обмен кода авторизации на токены обновления и доступа== 
+
+AuthService -> Google :  https://oauth2.googleapis.com/token
+Google --> AuthService : access_token, refresh_token, id_token
+
+alt code недействителен
+Google --> AuthService : invalid_grant
+AuthService --> ПК : 401 Unauthorized 
+ПК --> Пользователь : способы авторизации
+end
+
+AuthService -> AuthService : Валидирует id_token
+
+alt code недействителен
+AuthService --> ПК : 401 Unauthorized
+ПК --> Пользователь : способы авторизации, кроме Google
+end
+
+AuthService -> AuthService : Извлекает claims
+AuthService -> AuthService : Сохраняет access_token, refresh_token
+
+== Аутентифкация клиента ==
+
+AuthService -> ClientService : Confirm client identity \n google_id, name, email, email_verified, picture
+
+ClientService -> ClientService : Проверка по google_id 
+ClientService -> ClientService : Проверка по  email
+
+alt Аккаунт по google_id или email не найден
+ClientService -> ClientService : Создать клиента \n (profile_state = phone_requiered)
+ClientService --> AuthService : Confirmation success (customer.id, mode=create, profile_state = phone_requiered)
+AuthService -> AuthService : Генерирует AuthToken (включает customer.id)
+note right of AuthService
+JWT claims:
+{
+  "sub": "customer_id",
+  "mode": "create",
+  "sid": "uuid", 
+  "auth_state": "phone_required",
+  "exp": 1749449308
+}
+end note
+else Аккаунт по google_id или email  найден, телефон заполнен, не верифицирован
+note right of ClientService
+accounts merge algorithm
+end note
+ClientService --> AuthService : Confirmation success (customer.id, mode=update, \n profile_state = phone_verification_required)
+
+AuthService -> AuthService : Генерирует auth_token (включает customer.id)
+note right of AuthService
+JWT claims:
+{
+  "sub": "customer_id",
+  "mode": "update"
+  "sid": "uuid", 
+  "phone": "customer.phone"
+  "auth_state": "phone_verification_required",
+  "exp": 1749449308
+}
+end note
+end
+AuthService --> ПК : auth_token
