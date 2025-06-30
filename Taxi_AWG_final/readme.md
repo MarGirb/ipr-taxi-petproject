@@ -20,9 +20,9 @@ Full-stack бизнес и системный анализ для pet-project "�
     - [Архитектура](#архитектура)
     - [Use Cases \& Sequence Diagrams](#use-cases--sequence-diagrams)
     - [API](#api)
-    - [Модель данных](#модель-данных)
+      - [Контракты](#контракты)
+    - [Модели данных](#модели-данных-1)
     - [Требования к логгированию](#требования-к-логгированию)
-  - [🌐 Ссылки на внешние артефакты](#-ссылки-на-внешние-артефакты)
   - [🧳 Инструменты](#-инструменты)
   - [👩‍💻 ИПР](#-ипр)
 
@@ -119,59 +119,46 @@ Full-stack бизнес и системный анализ для pet-project "�
 | UC-2.2 Авторизация клиента, аутентифицированного  через OAuth 2.0. Google | [Текст](https://docs.google.com/document/d/1xviqh3xp5lOp7Rk8CkKzaOAa_0-QT2CP3HJOTyDjGNs/edit?usp=drive_link)      | [Sequence PNG](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/interactions/sequence_diagrams/UC-4_Авторизация_клиента_аутентифицированного_через_OAuth_2_0_Google.png)             | [Sequence PlantUML](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/interactions/sequence_diagrams/UC-4_Авторизация_клиента_аутентифицированного%20_через_OAuth_2_0_Google.plantuml)                  |
 
 ### API
+- [OpenAPI Spec in SwaggerHub](https://app.swaggerhub.com/apis/MARGIRB/API_AWG_Taxi_Service/1.0.0)
+- [OpenAPI Spec.yaml](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/interactions/api/swagger_3_0.yml)
 
-| Артефакт                                                                                                   | Ссылка |
-| ------------------------------------------------------------------------------------------------------------------ | ------------ |
-| Swagger Spec                                                                                                       |              |
-| INT-TripService-1. Создание Поездки по Заявке                                               |              |
-| INT-ClientAp-1. ClientAp запрашивает  authorization URL для OAuth 2.0 Google)                        |              |
-| INT-ClientAp-2. ClientAp запрашивает  auth_token в AuthService                                         |              |
-| INT-ClientApр-3. Client App запрашивает в AuthService access_token                                    |              |
-| INT-ClientApp-4. ClientApp получает данные клиента в  СustomerService                       |              |
-| INT-AuthService-1. Обмен кода авторизации на токены доступа в Google OAuth 2.0 |              |
-|                                                                                                                    |              |
+#### Контракты  
 
-### Модель данных
+- [INT-ClientAp-1. ClientAp запрашивает  authorization URL для OAuth 2.0 Google](https://docs.google.com/document/d/1QHuE8bpfKOh3kytY8n1yOs_1GmTNV0vNHgDm4U1YsMc/edit?usp=drive_link)
+- [INT-ClientAp-2. ClientAp запрашивает  auth_token в AuthService](https://docs.google.com/document/d/1gFTW0mbLO1BZUEAocuhOykplAeJJ8oqx_3PtpT1P1GU/edit?usp=drive_link)
+- [INT-AuthService-1. Обмен кода авторизации на токены доступа в Google OAuth 2](https://docs.google.com/document/d/1HVrtgJb2_5ndAenc1h0uQ034NotldAZXoKSM0RrAFQs/edit?usp=drive_link)
+- [INT-ClientApр-3. Client App запрашивает в AuthService access_token](https://docs.google.com/document/d/1ajwAOxNQaqtBTaZF_nuA4XEuudcVphU9ZtxNuDIS8RQ/edit?usp=drive_link)
+- [INT-ClientApp-4. ClientApp получает данные клиента в  СustomerService](https://docs.google.com/document/d/1ey2wqxpcnpyYepMIUw1fYXAba7P3eiZHsx4yRkeHups/edit?usp=drive_link)
+- [INT-TripService-1. Создание Поездки по Заявке](https://docs.google.com/document/d/1ETf1IHHxLYHFNMMtuXQ5EbkkgftJBDmd1LsfpBpcdYQ/edit?usp=sharing)
 
-| Артефакт            | Формат | Ссылка |
-| --------------------------- | ------------ | ------------ |
-| ERD                         | Miro / PNG   |              |
-| State Machine               | Miro / PNG   |              |
-| Словарь данных | Miro / PNG   |              |
+### Модели данных
+
+- [State Machine](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/data/State_Machine%20.jpg)
+- [Словарь данных](https://docs.google.com/document/d/10KZdMk-CEB4wlowSt70QYX2wTnOXWpxI7LCSUPdLruU/edit?usp=drive_link)
+- ERD: [ERD файл](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/data/ERD.erd), [PNG](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/data/ERD.png), [SQL файл](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/data/ERD_my_taxi.sql)
+
 
 ### Требования к логгированию
 
-| Артефакт                                                                  | Ссылка |
-| --------------------------------------------------------------------------------- | ------------ |
-| Сервис такси  MyTaxi. Требования к логгированию |              |
+- [Сервис такси  MyTaxi. Требования к логгированию ](https://docs.google.com/document/d/1x8aJ9HnnHkU61igeE0T3xfub_kynuIIF3RGqaY8Bybg/edit?usp=drive_link)
 
 ---
 
-## 🌐 Ссылки на внешние артефакты
-
-| Тип                                        | Ссылка                                                  |
-| --------------------------------------------- | ------------------------------------------------------------- |
-| Miro (ERD, State Machine, DFD, IDEF0, МПО) | [Открыть Miro-доску](https://miro.com/app/board/...) |
-| BPMN (StormBPMN)                              | [Сценарии](https://stormbpmn.com/...)                    |
-| SwaggerHub                                    | [API в SwaggerHub](https://swagger.io/tools/swaggerhub/)        |
-
----
 
 ## 🧳 Инструменты
 
-- `draw.io` для C4-диаграмм
-- `Miro` для ERD, DFD, IDEF0, State Machine
-- `StormBPMN` для BPMN-сценариев
-- `PlantUML` для sequence диаграмм
-- `Swagger` и OpenAPI 3.0 для описания API
-- `Google Docs` для текстовых описаний и требований
+- **draw.io** для C4-диаграмм
+- **Miro** для DFD, IDEF0, State Machine
+- **StormBPM** для BPMN-сценариев
+- **VSCode** для PlantUML-диаграмм, ERD и спецификации OpenAPI 3.0
+- **Google Docs** для текстовых описаний 
 
 ---
 
 ## 👩‍💻 ИПР
 
-> Ментори: **Мария Гиршберг**
-> Ментор: **Андрей Корниенко**
-> Руководитель: **Максим Скворцов**
-> Период ИПР: **февраль-июнь 2025**
-> Компания: **AWG**
+- Ментори: **Мария Гиршберг**
+- Ментор: **Андрей Корниенко**
+- Руководитель: **Максим Скворцов**
+- Компания: **AWG**
+- Период ИПР: **февраль-июнь 2025**
