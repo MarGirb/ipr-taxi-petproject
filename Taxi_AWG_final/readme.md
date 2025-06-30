@@ -119,7 +119,7 @@ Full-stack бизнес и системный анализ для pet-project "�
 | UC-2.2 Авторизация клиента, аутентифицированного  через OAuth 2.0. Google | [Текст](https://docs.google.com/document/d/1xviqh3xp5lOp7Rk8CkKzaOAa_0-QT2CP3HJOTyDjGNs/edit?usp=drive_link)      | [Sequence PNG](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/interactions/sequence_diagrams/UC-4_Авторизация_клиента_аутентифицированного_через_OAuth_2_0_Google.png)             | [Sequence PlantUML](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/interactions/sequence_diagrams/UC-4_Авторизация_клиента_аутентифицированного%20_через_OAuth_2_0_Google.plantuml)                  |
 
 ### API
-- [OpenAPI Spec in SwaggerHub](https://app.swaggerhub.com/apis/MARGIRB/API_AWG_Taxi_Service/1.0.0)
+- [OpenAPI Spec at SwaggerHub](https://app.swaggerhub.com/apis/MARGIRB/API_AWG_Taxi_Service/1.0.0)
 - [OpenAPI Spec.yaml](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/interactions/api/swagger_3_0.yml)
 
 #### Контракты  
@@ -147,10 +147,10 @@ Full-stack бизнес и системный анализ для pet-project "�
 
 ## 🧳 Инструменты
 
-- **draw.io** для C4-диаграмм
+- **draw.io** для C4, Use Case diagram
 - **Miro** для DFD, IDEF0, State Machine
 - **StormBPM** для BPMN-сценариев
-- **VSCode** для PlantUML-диаграмм, ERD и спецификации OpenAPI 3.0
+- **VSCode** для PlantUML, ERD и спецификации OpenAPI 3.0
 - **Google Docs** для текстовых описаний 
 
 ---
