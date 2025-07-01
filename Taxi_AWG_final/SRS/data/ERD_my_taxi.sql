@@ -1,30 +1,30 @@
 
 CREATE TABLE addresses
 (
-  country      uuid            ,
-  region       uuid            ,
-  province     varchar         ,
-  area         varchar         ,
-  district     varchar         ,
-  locality     varchar         ,
-  street       varchar         ,
-  house        varchar         ,
-  building     varchar         ,
-  full_address varchar         ,
-  postal_code  varchar         ,
-  latitude     double precision,
-  longitude    double precision,
-  created_at   timestamptz     ,
-  id           uuid             NOT NULL GENERATED ALWAYS AS IDENTITY UNIQUE,
+  country      uuid       ,
+  region       uuid       ,
+  province     varchar    ,
+  area         varchar    ,
+  district     varchar    ,
+  locality     varchar    ,
+  street       varchar    ,
+  house        varchar    ,
+  building     varchar    ,
+  full_address varchar    ,
+  postal_code  varchar    ,
+  latitude     double     ,
+  longitude    double     ,
+  created_at   timestamptz,
+  id           uuid        NOT NULL UNIQUE,
   PRIMARY KEY (id)
 );
 
-COMMENT ON TABLE addresses IS 'Адрес';
+COMMENT ON TABLE addresses IS 'ON';
 
 CREATE TABLE car_lease_contract
 (
-  id            UUID        NOT NULL GENERATED ALWAYS AS IDENTITY UNIQUE,
-  number        varchar     NOT NULL GENERATED ALWAYS AS IDENTITY UNIQUE,
+  id            UUID        NOT NULL UNIQUE,
+  number        varchar     NOT NULL UNIQUE,
   signed_at     timestamptz,
   ended_at      timestamptz,
   contract_text text       ,
@@ -32,11 +32,11 @@ CREATE TABLE car_lease_contract
   car_id        uuid       
 );
 
-COMMENT ON TABLE car_lease_contract IS 'Договор на аренду автомобиля';
+COMMENT ON TABLE car_lease_contract IS 'ON';
 
 CREATE TABLE cars
 (
-  number              varchar NOT NULL GENERATED ALWAYS AS IDENTITY UNIQUE,
+  number              varchar NOT NULL UNIQUE,
   brand               varchar NOT NULL,
   model               varchar NOT NULL,
   color               varchar NOT NULL,
@@ -44,21 +44,21 @@ CREATE TABLE cars
   vin                 varchar NOT NULL UNIQUE,
   registration_number varchar NOT NULL UNIQUE,
   owned_by_company    bool    NOT NULL DEFAULT true,
-  id                  UUID    NOT NULL GENERATED ALWAYS AS IDENTITY UNIQUE,
+  id                  UUID    NOT NULL UNIQUE,
   PRIMARY KEY (id)
 );
 
-COMMENT ON TABLE cars IS 'Автомобиль';
+COMMENT ON TABLE cars IS 'ON';
 
 CREATE TABLE currencies
 (
-  id   UUID    NOT NULL GENERATED ALWAYS AS IDENTITY UNIQUE,
+  id   UUID    NOT NULL UNIQUE,
   name varchar NOT NULL,
   code varchar NOT NULL UNIQUE,
   PRIMARY KEY (id)
 );
 
-COMMENT ON TABLE currencies IS 'Валюты';
+COMMENT ON TABLE currencies IS 'ON';
 
 CREATE TABLE customers
 (
@@ -75,21 +75,21 @@ CREATE TABLE customers
   is_deleted     boolean     DEFAULT false,
   deleted_at     timestamptz,
   photo          varchar    ,
-  id             UUID        NOT NULL GENERATED ALWAYS AS IDENTITY UNIQUE,
+  id             UUID        NOT NULL UNIQUE,
   PRIMARY KEY (id)
 );
 
-COMMENT ON TABLE customers IS 'Клиент';
+COMMENT ON TABLE customers IS 'ON';
 
 CREATE TABLE driver_statuses
 (
   name       varchar    ,
   created_at timestamptz NOT NULL,
-  id         UUID        NOT NULL GENERATED ALWAYS AS IDENTITY UNIQUE,
+  id         UUID        NOT NULL UNIQUE,
   PRIMARY KEY (id)
 );
 
-COMMENT ON TABLE driver_statuses IS 'Статусы водителя';
+COMMENT ON TABLE driver_statuses IS 'ON';
 
 CREATE TABLE drivers
 (
@@ -98,13 +98,13 @@ CREATE TABLE drivers
   passport_data  TEXT       ,
   license_number TEXT       ,
   status_set_at  timestamp   NOT NULL,
-  id             UUID        NOT NULL GENERATED ALWAYS AS IDENTITY UNIQUE,
+  id             UUID        NOT NULL UNIQUE,
   status         uuid        NOT NULL,
   car_id         uuid       ,
   PRIMARY KEY (id)
 );
 
-COMMENT ON TABLE drivers IS 'Водитель';
+COMMENT ON TABLE drivers IS 'ON';
 
 CREATE TABLE income_cash_order
 (
@@ -116,7 +116,7 @@ CREATE TABLE income_cash_order
   PRIMARY KEY (id)
 );
 
-COMMENT ON TABLE income_cash_order IS 'ПКО';
+COMMENT ON TABLE income_cash_order IS 'ON';
 
 CREATE TABLE payments
 (
@@ -129,12 +129,12 @@ CREATE TABLE payments
   is_deleted        boolean     NOT NULL,
   comment           varchar     DEFAULT null,
   trip_id           UUID       ,
-  id                UUID        NOT NULL GENERATED ALWAYS AS IDENTITY UNIQUE,
-  id                UUID        NOT NULL GENERATED ALWAYS AS IDENTITY UNIQUE,
-  PRIMARY KEY (id)
+  id                UUID        NOT NULL UNIQUE,
+  id                UUID        NOT NULL UNIQUE,
+  PRIMARY KEY (id, id)
 );
 
-COMMENT ON TABLE payments IS 'Оплата';
+COMMENT ON TABLE payments IS 'ON';
 
 CREATE TABLE receipts
 (
@@ -148,14 +148,14 @@ CREATE TABLE receipts
   fiscal_data  text        NOT NULL,
   qr           varchar    ,
   payment_id   uuid       ,
-  id           UUID        NOT NULL GENERATED ALWAYS AS IDENTITY UNIQUE
+  id           UUID        NOT NULL UNIQUE
 );
 
-COMMENT ON TABLE receipts IS 'Чек';
+COMMENT ON TABLE receipts IS 'ON';
 
 CREATE TABLE request_status_history
 (
-  id            UUID      NOT NULL GENERATED ALWAYS AS IDENTITY UNIQUE,
+  id            UUID      NOT NULL UNIQUE,
   status_set_at timestamp NOT NULL,
   set_by        UUID     ,
   comment       TEXT     ,
@@ -163,22 +163,22 @@ CREATE TABLE request_status_history
   request_id    UUID      NOT NULL
 );
 
-COMMENT ON TABLE request_status_history IS 'История статусов заявки';
+COMMENT ON TABLE request_status_history IS 'ON';
 
 CREATE TABLE request_statuses
 (
   name       varchar     NOT NULL,
   created_at timestamptz NOT NULL,
-  id         UUID        NOT NULL GENERATED ALWAYS AS IDENTITY UNIQUE,
+  id         UUID        NOT NULL UNIQUE,
   PRIMARY KEY (id)
 );
 
-COMMENT ON TABLE request_statuses IS 'Статусы заявки';
+COMMENT ON TABLE request_statuses IS 'ON';
 
 CREATE TABLE requests
 (
-  id             UUID        NOT NULL GENERATED ALWAYS AS IDENTITY UNIQUE,
-  number         varchar     NOT NULL GENERATED ALWAYS AS IDENTITY,
+  id             UUID        NOT NULL UNIQUE,
+  number         varchar     NOT NULL,
   created_at     timestamptz NOT NULL,
   client_id      uuid        NOT NULL,
   customer_phone varchar(15) NOT NULL,
@@ -191,40 +191,40 @@ CREATE TABLE requests
   PRIMARY KEY (id)
 );
 
-COMMENT ON TABLE requests IS 'Заявка на поездку ';
+COMMENT ON TABLE requests IS 'ON';
 
 CREATE TABLE ride
 (
-  id                  UUID             NOT NULL GENERATED ALWAYS AS IDENTITY UNIQUE,
-  created_at          timestamptz      NOT NULL,
-  desired_start_time  timestamptz      DEFAULT null,
-  start_time          timestamptz      DEFAULT null,
-  customer_comment    varchar          DEFAULT null,
-  comment             varchar          DEFAULT null,
-  distance            bigint           DEFAULT null,
-  duration            bigint           DEFAULT null,
-  cost                numeric          DEFAULT null,
-  navi_url            TEXT            ,
-  waiting_duration    INTEGER         ,
-  trip_fare_id        varchar          NOT NULL,
-  type                varchar          NOT NULL,
-  driver_id           UUID             NOT NULL,
-  trip_id             uuid             NOT NULL,
-  request_id          uuid             NOT NULL,
-  sort                integer          NOT NULL,
-  active              boolean          NOT NULL DEFAULT true,
-  start_address_id    uuid             DEFAULT null,
-  start_full_address  varchar          NOT NULL,
-  start_latitude      double precision NOT NULL GENERATED ALWAYS AS IDENTITY UNIQUE,
-  start_longitude     double precision,
-  finish_address_id   uuid             DEFAULT null,
-  finish_full_address varchar          NOT NULL,
-  finish_latitude     double precision,
-  finish_longitude    double precision,
+  id                  UUID        NOT NULL UNIQUE,
+  created_at          timestamptz NOT NULL,
+  desired_start_time  timestamptz DEFAULT null,
+  start_time          timestamptz DEFAULT null,
+  customer_comment    varchar     DEFAULT null,
+  comment             varchar     DEFAULT null,
+  distance            bigint      DEFAULT null,
+  duration            bigint      DEFAULT null,
+  cost                numeric     DEFAULT null,
+  navi_url            TEXT       ,
+  waiting_duration    INTEGER    ,
+  trip_fare_id        varchar     NOT NULL,
+  type                varchar     NOT NULL,
+  driver_id           UUID        NOT NULL,
+  trip_id             uuid        NOT NULL,
+  request_id          uuid        NOT NULL,
+  sort                integer     NOT NULL,
+  active              boolean     NOT NULL DEFAULT true,
+  start_address_id    uuid        DEFAULT null,
+  start_full_address  varchar     NOT NULL,
+  start_latitude      double      NOT NULL UNIQUE,
+  start_longitude     double     ,
+  finish_address_id   uuid        DEFAULT null,
+  finish_full_address varchar     NOT NULL,
+  finish_latitude     double     ,
+  finish_longitude    double     ,
   PRIMARY KEY (id)
 );
 
-COMMENT ON TABLE ride IS 'Маршрут';
+COMMENT ON TABLE ride IS 'ON';
 
 CREATE TABLE trip_fares
 (
@@ -243,7 +243,7 @@ CREATE TABLE trip_fares
   PRIMARY KEY (id)
 );
 
-COMMENT ON TABLE trip_fares IS 'Тариф';
+COMMENT ON TABLE trip_fares IS 'ON';
 
 CREATE TABLE trip_status_history
 (
@@ -255,22 +255,22 @@ CREATE TABLE trip_status_history
   PRIMARY KEY (id)
 );
 
-COMMENT ON TABLE trip_status_history IS 'История статусов поездки';
+COMMENT ON TABLE trip_status_history IS 'ON';
 
 CREATE TABLE trip_statuses
 (
   name       varchar    ,
   created_at timestamptz NOT NULL,
-  id         UUID        NOT NULL GENERATED ALWAYS AS IDENTITY UNIQUE,
+  id         UUID        NOT NULL UNIQUE,
   PRIMARY KEY (id)
 );
 
-COMMENT ON TABLE trip_statuses IS 'Статусы поездки';
+COMMENT ON TABLE trip_statuses IS 'ON';
 
 CREATE TABLE trips
 (
-  id            UUID        NOT NULL GENERATED ALWAYS AS IDENTITY UNIQUE,
-  number        varchar     NOT NULL GENERATED ALWAYS AS IDENTITY,
+  id            UUID        NOT NULL UNIQUE,
+  number        varchar     NOT NULL,
   created_at    timestamptz NOT NULL,
   is_deleted    boolean     DEFAULT false,
   request_id    UUID        DEFAULT null,
@@ -282,12 +282,42 @@ CREATE TABLE trips
   PRIMARY KEY (id)
 );
 
-COMMENT ON TABLE trips IS 'Поездка';
+COMMENT ON TABLE trips IS 'ON';
 
-ALTER TABLE requests
-  ADD CONSTRAINT FK_customers_TO_requests
-    FOREIGN KEY (client_id)
-    REFERENCES customers (id);
+ALTER TABLE car_lease_contract
+  ADD CONSTRAINT FK_drivers_TO_car_lease_contract
+    FOREIGN KEY (driver_id)
+    REFERENCES drivers (id);
+
+ALTER TABLE car_lease_contract
+  ADD CONSTRAINT FK_cars_TO_car_lease_contract
+    FOREIGN KEY (car_id)
+    REFERENCES cars (id);
+
+ALTER TABLE drivers
+  ADD CONSTRAINT FK_driver_statuses_TO_drivers
+    FOREIGN KEY (status)
+    REFERENCES driver_statuses (id);
+
+ALTER TABLE drivers
+  ADD CONSTRAINT FK_cars_TO_drivers
+    FOREIGN KEY (car_id)
+    REFERENCES cars (id);
+
+ALTER TABLE payments
+  ADD CONSTRAINT FK_trips_TO_payments
+    FOREIGN KEY (trip_id)
+    REFERENCES trips (id);
+
+ALTER TABLE payments
+  ADD CONSTRAINT FK_income_cash_order_TO_payments
+    FOREIGN KEY (id)
+    REFERENCES income_cash_order (id);
+
+ALTER TABLE receipts
+  ADD CONSTRAINT FK_payments_TO_receipts
+    FOREIGN KEY (id)
+    REFERENCES payments (id);
 
 ALTER TABLE request_status_history
   ADD CONSTRAINT FK_request_statuses_TO_request_status_history
@@ -300,74 +330,24 @@ ALTER TABLE request_status_history
     REFERENCES requests (id);
 
 ALTER TABLE requests
+  ADD CONSTRAINT FK_customers_TO_requests
+    FOREIGN KEY (client_id)
+    REFERENCES customers (id);
+
+ALTER TABLE requests
   ADD CONSTRAINT FK_request_statuses_TO_requests
     FOREIGN KEY (status_id)
     REFERENCES request_statuses (id);
-
-ALTER TABLE trips
-  ADD CONSTRAINT FK_requests_TO_trips
-    FOREIGN KEY (request_id)
-    REFERENCES requests (id);
-
-ALTER TABLE trip_status_history
-  ADD CONSTRAINT FK_trip_statuses_TO_trip_status_history
-    FOREIGN KEY (trip_id)
-    REFERENCES trip_statuses (id);
-
-ALTER TABLE trips
-  ADD CONSTRAINT FK_trip_statuses_TO_trips
-    FOREIGN KEY (status_id)
-    REFERENCES trip_statuses (id);
-
-ALTER TABLE ride
-  ADD CONSTRAINT FK_trip_fares_TO_ride
-    FOREIGN KEY (trip_fare_id)
-    REFERENCES trip_fares (id);
-
-ALTER TABLE drivers
-  ADD CONSTRAINT FK_driver_statuses_TO_drivers
-    FOREIGN KEY (status)
-    REFERENCES driver_statuses (id);
-
-ALTER TABLE drivers
-  ADD CONSTRAINT FK_cars_TO_drivers
-    FOREIGN KEY (car_id)
-    REFERENCES cars (id);
-
-ALTER TABLE car_lease_contract
-  ADD CONSTRAINT FK_drivers_TO_car_lease_contract
-    FOREIGN KEY (driver_id)
-    REFERENCES drivers (id);
-
-ALTER TABLE car_lease_contract
-  ADD CONSTRAINT FK_cars_TO_car_lease_contract
-    FOREIGN KEY (car_id)
-    REFERENCES cars (id);
-
-ALTER TABLE payments
-  ADD CONSTRAINT FK_trips_TO_payments
-    FOREIGN KEY (trip_id)
-    REFERENCES trips (id);
-
-ALTER TABLE receipts
-  ADD CONSTRAINT FK_payments_TO_receipts
-    FOREIGN KEY (id)
-    REFERENCES payments (id);
-
-ALTER TABLE payments
-  ADD CONSTRAINT FK_income_cash_order_TO_payments
-    FOREIGN KEY (id)
-    REFERENCES income_cash_order (id);
-
-ALTER TABLE trip_fares
-  ADD CONSTRAINT FK_currencies_TO_trip_fares
-    FOREIGN KEY (currency)
-    REFERENCES currencies (id);
 
 ALTER TABLE requests
   ADD CONSTRAINT FK_currencies_TO_requests
     FOREIGN KEY (currency)
     REFERENCES currencies (id);
+
+ALTER TABLE ride
+  ADD CONSTRAINT FK_trip_fares_TO_ride
+    FOREIGN KEY (trip_fare_id)
+    REFERENCES trip_fares (id);
 
 ALTER TABLE ride
   ADD CONSTRAINT FK_drivers_TO_ride
@@ -384,11 +364,6 @@ ALTER TABLE ride
     FOREIGN KEY (request_id)
     REFERENCES requests (id);
 
-ALTER TABLE trips
-  ADD CONSTRAINT FK_currencies_TO_trips
-    FOREIGN KEY (currency)
-    REFERENCES currencies (id);
-
 ALTER TABLE ride
   ADD CONSTRAINT FK_addresses_TO_ride
     FOREIGN KEY (start_address_id)
@@ -398,3 +373,28 @@ ALTER TABLE ride
   ADD CONSTRAINT FK_addresses_TO_ride1
     FOREIGN KEY (finish_address_id)
     REFERENCES addresses (id);
+
+ALTER TABLE trip_fares
+  ADD CONSTRAINT FK_currencies_TO_trip_fares
+    FOREIGN KEY (currency)
+    REFERENCES currencies (id);
+
+ALTER TABLE trip_status_history
+  ADD CONSTRAINT FK_trip_statuses_TO_trip_status_history
+    FOREIGN KEY (trip_id)
+    REFERENCES trip_statuses (id);
+
+ALTER TABLE trips
+  ADD CONSTRAINT FK_requests_TO_trips
+    FOREIGN KEY (request_id)
+    REFERENCES requests (id);
+
+ALTER TABLE trips
+  ADD CONSTRAINT FK_trip_statuses_TO_trips
+    FOREIGN KEY (status_id)
+    REFERENCES trip_statuses (id);
+
+ALTER TABLE trips
+  ADD CONSTRAINT FK_currencies_TO_trips
+    FOREIGN KEY (currency)
+    REFERENCES currencies (id);
