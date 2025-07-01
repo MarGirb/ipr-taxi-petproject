@@ -149,6 +149,7 @@ Full-stack бизнес и системный анализ для pet-project "�
 - **Miro** для DFD, IDEF0, State Machine
 - **StormBPM** для BPMN-сценариев
 - **VSCode** для PlantUML, ERD и спецификации OpenAPI 3.0
+- **Swagger Hub** для спецификации OpenAPI 3.0
 - **Google Docs** для текстовых описаний 
 
 ---
