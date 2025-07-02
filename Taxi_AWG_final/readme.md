@@ -20,7 +20,10 @@ Full-stack бизнес и системный анализ для pet-project "�
     - [Архитектура](#архитектура)
     - [Use Cases \& Sequence Diagrams](#use-cases--sequence-diagrams)
     - [API](#api)
-      - [Контракты](#контракты)
+      - [REST API](#rest-api)
+        - [Контракты](#контракты)
+      - [AsyncAPI](#asyncapi)
+        - [Топики Kafka](#топики-kafka)
     - [Модели данных](#модели-данных-1)
     - [Требования к логгированию](#требования-к-логгированию)
   - [🧳 Инструменты](#-инструменты)
@@ -117,17 +120,30 @@ Full-stack бизнес и системный анализ для pet-project "�
 | UC-2.2 Авторизация клиента, аутентифицированного  через OAuth 2.0. Google | [Текст](https://docs.google.com/document/d/1xviqh3xp5lOp7Rk8CkKzaOAa_0-QT2CP3HJOTyDjGNs/edit?usp=drive_link)      | [Sequence PNG](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/interactions/sequence_diagrams/UC-4_Авторизация_клиента_аутентифицированного_через_OAuth_2_0_Google.png)             | [Sequence PlantUML](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/interactions/sequence_diagrams/UC-4_Авторизация_клиента_аутентифицированного%20_через_OAuth_2_0_Google.plantuml)                  |
 
 ### API
+
+#### REST API
+
 - [OpenAPI Spec at SwaggerHub](https://app.swaggerhub.com/apis/MARGIRB/API_AWG_Taxi_Service/1.0.0)
 - [OpenAPI Spec.yaml](https://github.com/MarGirb/ipr-taxi-petproject/blob/main/Taxi_AWG_final/SRS/interactions/api/swagger_3_0.yml)
 
-#### Контракты  
+##### Контракты 
 
-- [INT-ClientAp-1. ClientAp запрашивает  authorization URL для OAuth 2.0 Google](https://docs.google.com/document/d/1QHuE8bpfKOh3kytY8n1yOs_1GmTNV0vNHgDm4U1YsMc/edit?usp=drive_link)
-- [INT-ClientAp-2. ClientAp запрашивает  auth_token в AuthService](https://docs.google.com/document/d/1gFTW0mbLO1BZUEAocuhOykplAeJJ8oqx_3PtpT1P1GU/edit?usp=drive_link)
+- [INT-ClientAp-1. ClientApp запрашивает  authorization URL для OAuth 2.0 Google](https://docs.google.com/document/d/1QHuE8bpfKOh3kytY8n1yOs_1GmTNV0vNHgDm4U1YsMc/edit?usp=drive_link)
+- [INT-ClientAp-2. ClientApp запрашивает  auth_token в AuthService](https://docs.google.com/document/d/1gFTW0mbLO1BZUEAocuhOykplAeJJ8oqx_3PtpT1P1GU/edit?usp=drive_link)
 - [INT-AuthService-1. Обмен кода авторизации на токены доступа в Google OAuth 2](https://docs.google.com/document/d/1HVrtgJb2_5ndAenc1h0uQ034NotldAZXoKSM0RrAFQs/edit?usp=drive_link)
-- [INT-ClientApр-3. Client App запрашивает в AuthService access_token](https://docs.google.com/document/d/1ajwAOxNQaqtBTaZF_nuA4XEuudcVphU9ZtxNuDIS8RQ/edit?usp=drive_link)
+- [INT-ClientApр-3. ClientApp запрашивает в AuthService access_token](https://docs.google.com/document/d/1ajwAOxNQaqtBTaZF_nuA4XEuudcVphU9ZtxNuDIS8RQ/edit?usp=drive_link)
 - [INT-ClientApp-4. ClientApp получает данные клиента в  СustomerService](https://docs.google.com/document/d/1ey2wqxpcnpyYepMIUw1fYXAba7P3eiZHsx4yRkeHups/edit?usp=drive_link)
 - [INT-TripService-1. Создание Поездки по Заявке](https://docs.google.com/document/d/1ETf1IHHxLYHFNMMtuXQ5EbkkgftJBDmd1LsfpBpcdYQ/edit?usp=sharing)
+
+#### AsyncAPI
+
+##### Топики Kafka
+
+- [request.status.changed](https://docs.google.com/document/d/1T0QLIuGnHXHvADiKHIi0NMvnHyvKcLCPb_UO03QNJoQ/edit?usp=sharing)
+- [ride.request.driver.search](https://docs.google.com/document/d/18ilY3rLyEK8gVlem6EwP6IEX7qC2LL7Z5Sj-VWFc_2k/edit?usp=sharing)
+- [ride.request.driver.search.result](https://docs.google.com/document/d/1Pi6DOdaqjBOGwDFASOHLygxIqxvgySBoEnQWPt12t-g/edit?usp=sharing)
+- [driver.status.search](https://docs.google.com/document/d/1VN38gYVnKuYeFtyB65GMK5ncWN7Rjw9b4DCBPNOySF0/edit?usp=sharing)
+- [driver.status.search.result](https://docs.google.com/document/d/1m5T03u8Hgk1M1yGHXXwYs3Vh4Defg_4aWHSrmzRdu38/edit?usp=sharing)
 
 ### Модели данных
 
