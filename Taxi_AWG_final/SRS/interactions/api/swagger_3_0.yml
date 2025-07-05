@@ -4,31 +4,28 @@ servers:
 - description: SwaggerHub API Auto Mocking
   url: https://virtserver.swaggerhub.com/VICHIGOVAANNA/Internet-shop/2.0.0
 info:
-  description: 'demo-project "Сервис такси" - условная региональная служба такси'
+  description: |
+    Унифицированное API для трёх интерфейсов условной региональной службы такси: клиентское SPA-приложение, мобильное приложение водителя и административная панель. Разграничение прав доступа выполнено через claim role в JWT токене и описано в параметре x-roles-allowed на уровне каждого endpoint.
+    Подробно описаны методы: "Создание поездки по Заявке", "Получение authorization URL для OAuth 2.0 Google", "Получение auth_token при OAuth 2.0 Google", "Запрос на авторизацию", "Чтение данных текущего клиента"
   version: 2.0.0
   title: API AWG Taxi Service
   contact:
     email: maria.girshberg@gmail.com
+    name: Мария Гиршберг
 
 tags:
-- name: authorisation
-  description: Авторизация
-- name: customers
-  description: Операции с клиентами
-- name: trips
-  description: Операции с поездками
-- name: requests
-  description: Операции с заявками
-- name: trip-fares
-  description: Операции с тарифами на поездки
-- name: addresses
-  description: Операции с адресами
+- name: admin
+  description: Операции, доступные в административном приложении
+- name: drivers
+  description: Операции, доступные в приложении водителя
+- name: me
+  description: Операции, доступные в клиентском приложении
 
 paths:
   /auth/methods:
     get:
       tags:
-      - authorisation
+      - me
       summary: Получение доступных методов авторизации
       responses:
         '200':
@@ -36,7 +33,7 @@ paths:
   /auth/google/redirect/{uuid}:
     get:
       tags:
-      - authorisation
+      - me
       summary: Получение authorization URL для OAuth 2.0 Google
       parameters:
       - name: uuid
@@ -48,21 +45,235 @@ paths:
           example: '550e8400-e29b-41d4-a716-446655440000'
       responses:
         '200':
-          description: OK
+          description: ссылка на страницу авторизации Google
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auth_url:
+                    type: string
+                    description: URL для авторизации через Google OAuth 2.0
+                    example: 'https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=123456789&redirect_uri=https%3A%2F%2Fmy-awgtaxi.ru%2Fwelcome&scope=openid%20email%20profile&state=asd123fgh&access_type=offline&prompt=consent'
+                  auth_verb:
+                    type: string
+                    description: Метод авторизации, Всегда GET
+                    example: 'GET'
+                  expires_at:
+                    type: string
+                    format: date-time
+                    description: Дата и время истечения срока действия ссылки
+                    example: '2025-04-30T11:41:00+03:00'
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        description: Тип ошибки (для трассировки)
+                        example: 'rate_limit_exceeded'
+                      status:
+                        type: string
+                        description: Код ответа. Нужен для того, чтобы вся модель данных могла быть разобрана позднее без контекста http-ответа
+                        example: '429'
+                      title:
+                        type: string
+                        description: Краткое человекочитаемое описание ошибки
+                        example: 'Превышен лимит запросов'
+                      detail:
+                        type: string
+                        description: Детализация ошибки, может содержать данные из запроса, поясняющие суть ошибки
+                        example: 'Превышен лимит запросов на получение ссылки авторизации Google OAuth 2.0 для пользователя [uuid]. Код трассировки [код, по которому можно найти запись в GrayLog]'
+                      message:
+                        type: string
+                        description: Текст ошибки, который может быть выведен пользователю
+                        example: 'Слишком много запросов. Попробуйте через час'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        description: Тип ошибки (для трассировки)
+                        example: 'invalid_uuid_format'
+                      status:
+                        type: string
+                        description: Код ответа. Нужен для того, чтобы вся модель данных могла быть разобрана позднее без контекста http-ответа
+                        example: '400'
+                      title:
+                        type: string
+                        description: Краткое человекочитаемое описание ошибки
+                        example: 'Неверный формат UUID'
+                      detail:
+                        type: string
+                        description: Детализация ошибки, может содержать данные из запроса, поясняющие суть ошибки
+                        example: 'UUID должен быть в формате GUID, переданное значение "{uuid}" неверно'
+                      message:
+                        type: string
+                        description: Текст ошибки, который может быть выведен пользователю
+                        example: 'Что-то пошло не так. Попробуйте снова. Если проблема сохранится, используйте другой браузер'
 
   /auth/authtoken/google:
     post:
       tags:
-      - authorisation
+      - me
       summary: Получение auth_token при OAuth 2.0 Google
+      operationId: getGoogleAuthToken
+      x-roles-allowed:
+      - customer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uuid:
+                  type: string
+                  description: Уникальный идентификатор пользователя
+                  example: '550e8400-e29b-41d4-a716-446655440000'
+                code:
+                  type: string
+                  description: Код авторизации, полученный от Google после успешной авторизации
+                  example: '4/0AY0e-g5d3f8b9c8d3e5'
+                state:
+                  type: string
+                  description: уникальный токен сеанса для защиты от CSRF атак
+                  example: 'a1b2c3d4e5f6g7h8i9j0'
+
       responses:
         '200':
-          description: OK
+          description: Успешное получение auth_token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  auth_token:
+                    type: string
+                    description: Промежуточный JWT токен для продолжения процесса авторизации
+                    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM1NDY3OCIsIm1vZGUiOiJjcmVhdGUiLCJzaWQiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJhdXRoX3N0YXRlIjoicHJvZmlsZV9jb21wbGV0ZWQiLCJleHAiOjE3NDk0NDkzMDh9.8_pvTWqUpWA33SgKNoWwfnN9B0DmgGDNPyi9ONIzD-w'
+                  expires_in:
+                    type: integer
+                    description: Время жизни токена в секундах
+                    example: 3600
+        '502':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        description: Тип ошибки (для трассировки)
+                        example: 'google_token_exchange_failed'
+                      status:
+                        type: string
+                        description: Код ответа. Нужен для того, чтобы вся модель данных могла быть разобрана позднее без контекста http-ответа
+                        example: '502'
+                      title:
+                        type: string
+                        description: Краткое человекочитаемое описание ошибки
+                        example: 'Ошибка обмена токенов Google'
+                      detail:
+                        type: string
+                        description: Детализация ошибки, может содержать данные из запроса, поясняющие суть ошибки
+                        example: 'Не удалось обменять код на токены: {google_error_description}'
+                      message:
+                        type: string
+                        description: Текст ошибки, который может быть выведен пользователю
+                        example: 'Попробуйте другой способ входа'
+        '400':
+          description: Разные причины ошибки 400
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/error_400_invalid_state'
+                - $ref: '#/components/schemas/error_400_invalid_uuid_format'
+                - $ref: '#/components/schemas/error_400_missing_code'
+
+        '403':
+          description: Доступ запрещен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        description: Тип ошибки (для трассировки)
+                        example: 'google_access_denied'
+                      status:
+                        type: string
+                        description: Код ответа. Нужен для того, чтобы вся модель данных могла быть разобрана позднее без контекста http-ответа
+                        example: '403'
+                      title:
+                        type: string
+                        description: Краткое человекочитаемое описание ошибки
+                        example: 'В разрешениях отказано'
+                      detail:
+                        type: string
+                        description: Детализация ошибки, может содержать данные из запроса, поясняющие суть ошибки
+                        example: 'Запрашиваемый scope не получен'
+                      message:
+                        type: string
+                        description: Текст ошибки, который может быть выведен пользователю
+                        example: 'Попробуйте другой способ входа'
+        '401':
+          description: Неверный запрос
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                        description: Тип ошибки (для трассировки)
+                        example: 'invalid_google_code'
+                      status:
+                        type: string
+                        description: Код ответа. Нужен для того, чтобы вся модель данных могла быть разобрана позднее без контекста http-ответа
+                        example: '401'
+                      title:
+                        type: string
+                        description: Краткое человекочитаемое описание ошибки
+                        example: 'Недействительный одноразовый токен Google'
+                      detail:
+                        type: string
+                        description: Детализация ошибки, может содержать данные из запроса, поясняющие суть ошибки
+                        example: 'Код авторизации Google недействителен или истек. Google вернул ошибку invalid_grant'
+                      message:
+                        type: string
+                        description: Текст ошибки, который может быть выведен пользователю
+                        example: 'Авторизация неуспешна, попробуйте другой способ входа'
 
   /auth/authtoken/password:
     post:
       tags:
-      - authorisation
+      - admin
+      - drivers
       summary: Получение auth_token по логину и паролю
       responses:
         '200':
@@ -71,7 +282,7 @@ paths:
   /auth/temptoken/phone/{uuid}:
     post:
       tags:
-      - authorisation
+      - me
       summary: Запрос на верификацию номера телефона
       responses:
         '200':
@@ -87,62 +298,300 @@ paths:
   /auth/authtoken/phone:
     post:
       tags:
-      - authorisation
+      - me
       summary: Получение auth_token по номеру телефона
       responses:
         '200':
           description: OK
 
   /auth/accesstoken:
-    post:
+    get:
       tags:
-      - authorisation
+      - me
       summary: Запрос на авторизацию
+      operationId: getAccessToken
+      security:
+      - bearer_JWT: []
+      x-roles-allowed:
+      - customer
       responses:
         '200':
-          description: OK
+          description: Получение access_token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: Access token для доступа к защищенным ресурсам
+                    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYWZmNDI1NC0zMzlkLTRmYTQtYTU5NS04MDZmMTE5MmIyNTEiLCJuYW1lIjoi0JjQstCw0L0g0JjQstCw0L3QvtCyIiwiZW1haWwiOiJ1c2VyQGV4YW1wbGUuY29tIiwicGhvbmUiOiI3MTIzNDU2Nzg5MCIsImV4cCI6MTc0OTkxNDQ4N30.NdSD4LEG_zWRS-YtFCarNfu7nHKOML8uXO51wrOfLqg'
+                  access_token_expires_in:
+                    type: integer
+                    description: Окончание срока действия access_tokenUnix timestamps in seconds
+                    example: 1749914487
+                  refresh_token:
+                    type: string
+                    description: Refresh token для обновления access_token
+                    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYWZmNDI1NC0zMzlkLTRmYTQtYTU5NS04MDZmMTE5MmIyNTEiLCJleHBpcmVkX3Rva2VuIjoiYWZmNDI1NC0zMzlkLTRmYTQtYTU5NS04MDZmMTE5MmIyNTEifQ.4f8d'
+                  refresh_toke_expires_in:
+                    type: integer
+                    description: Окончание срока действия refresh_token. Unix timestamps in seconds
+                    example: 1752506487 # 7 days
+        '410':
+          description: Устаревший токен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: Описание ошибки
+                    example: 'auth_token_expired'
+                  status:
+                    type: string
+                    description: Код ответа. Нужен для того, чтобы вся модель данных могла быть разобрана позднее без контекста http-ответа
+                    example: '410'
+                  title:
+                    type: string
+                    description: Краткое человекочитаемое описание ошибки
+                    example: 'auth_token истек'
+                  detail:
+                    type: string
+                    description: Детализация ошибки, может содержать данные из запроса, поясняющие суть ошибки
+                    example: 'Срок действия “{auth_token}”истек '
+                  message:
+                    type: string
+                    description: Текст ошибки, который может быть выведен пользователю
+                    example: 'Что-то пошло не так. попробуйте еще раз'
+        '428':
+          description: Профиль недозаполнен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: Описание ошибки
+                    example: 'profile_not_complete'
+                  status:
+                    type: string
+                    description: Код ответа. Нужен для того, чтобы вся модель данных могла быть разобрана позднее без контекста http-ответа
+                    example: '428'
+                  title:
+                    type: string
+                    description: Краткое человекочитаемое описание ошибки
+                    example: 'Профиль клиента не заполнен'
+                  detail:
+                    type: string
+                    description: Детализация ошибки, может содержать данные из запроса, поясняющие суть ошибки
+                    example: 'Отсутствуют обязательные поля в профиле пользователя: {missing_fields}'
+                  message:
+                    type: string
+                    description: Текст ошибки, который может быть выведен пользователю
+                    example: 'Что-то пошло не так. Вы будете перенаправлены на страницу авторизации'
 
   /customers:
     get:
       tags:
-      - customers
+      - admin
+      security:
+      - bearer_JWT: []
       summary: Получение списка клиентов
+      operationId: getCustomers
+      x-roles-allowed:
+      - customer_manager
+      - manager
+      - admin
       responses:
         '200':
-          description: OK
+          description: Список клиентов
 
     post:
       tags:
-      - customers
+      - admin
+      - me
       summary: Создание клиента
+      operationId: createCustomer
+      security:
+      - bearer_JWT: []
       responses:
         '201':
           description: OK
 
+  /me:
+    get:
+      tags:
+      - me
+      summary: Чтение данных текущего клиента
+      operationId: getCurrentCustomer
+      security:
+      - bearer_JWT: []
+      x-roles-allowed:
+      - customer
+      responses:
+        '200':
+          description: Модель данных клиента
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  customer_id:
+                    type: string
+                    description: Уникальный идентификатор клиента
+                    example: '550e8400-e29b-41d4-a716-446655440000'
+                  name:
+                    type: string
+                    description: Имя клиента
+                    example: 'Иван Иванов'
+                  email:
+                    type: string
+                    description: Email клиента
+                    example: 'ivan.ivanov@example.com'
+                  email_verified:
+                    type: boolean
+                    description: Флаг верификации email
+                    example: true
+                  phone:
+                    type: string
+                    description: Номер телефона клиента
+                    example: '+7 (123) 456-78-90'
+                  phone_verified:
+                    type: boolean
+                    description: Флаг верификации номера телефона
+                    example: true
+                  picture:
+                    type: string
+                    description: URL аватара клиента
+                    example: 'https://example.com/avatar.jpg'
+                  is_deleted:
+                    type: boolean
+                    description: Флаг логического удаления клиента
+                    example: false
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: Описание ошибки
+                    example: 'unauthorized'
+                  status:
+                    type: string
+                    description: Код ответа. Нужен для того, чтобы вся модель данных могла быть разобрана позднее без контекста http-ответа
+                    example: '401'
+                  title:
+                    type: string
+                    description: Краткое человекочитаемое описание ошибки
+                    example: 'Ошибка авторизации'
+                  detail:
+                    type: string
+                    description: Детализация ошибки, может содержать данные из запроса, поясняющие суть ошибки
+                    example: 'Токен {access_token} неверен или срок действия его истек'
+                  message:
+                    type: string
+                    description: Текст ошибки, который может быть выведен пользователю
+                    example: 'Время ожидания истекло. Вы будете перенаправлены на страницу авторизации'
+    patch:
+      tags:
+      - me
+      summary: Изменение данных текущего клиента
+      x-notes: на MVP доступно только изменение customer.name
+      operationId: updateCurrentCustomer
+      security:
+      - bearer_JWT: []
+      x-roles-allowed:
+      - customer
+      responses:
+        '200':
+          description: Модель данных клиента
+
+    delete:
+      tags:
+      - me
+      summary: Удаление  текущего клиента
+      x-dev-notes: Логическое удаление - устанавливается customer.is_deleted = true
+      operationId: deleteCurrentCustomer
+      security:
+      - bearer_JWT: []
+      x-roles-allowed:
+      - customer
+      responses:
+        '200':
+          description: OK
+
+  /me/requests:
+    get:
+      tags:
+      - me
+      summary: Получение списка Заявок текущего клиента
+      operationId: getRequestsByCurrentCustomer
+      security:
+      - bearer_JWT: []
+      x-roles-allowed:
+      - customer
+      responses:
+        '200':
+          description: список заявок клиента
+
+  /me/addresses:
+    get:
+      tags:
+      - me
+      summary: Получение списка адресов текущего клиента
+      operationId: getMyAddressesByCurrentCustomer
+      security:
+      - bearer_JWT: []
+      x-roles-allowed:
+      - customer
+      responses:
+        '200':
+          description: список адресов клиента
+
   /customers/{customer_id}:
     get:
       tags:
-      - customers
-      summary: Чтение данных конкретного клиента
+      - admin
+      summary: Чтение данных конкретного клиента менеджером
+      operationId: getCustomerById
+      security:
+      - bearer_JWT: []
+      x-roles-allowed:
+      - customer_manager
+      - manager
+      - admin
       responses:
         '200':
           description: OK
       parameters:
       - name: customer_id
         in: path
-        description: ID
+        description: Модель данных клиента
         required: true
         schema:
           type: string
 
     patch:
       tags:
-      - customers
+      - admin
       summary: Изменеие данных клиента
       x-notes: на MVP доступно только изменение customer.name
+      operationId: updateCustomer
+      security:
+      - bearer_JWT: []
+      x-roles-allowed:
+      - customer_manager
+      - manager
+      - admin
       responses:
         '200':
-          description: OK
+          description: Модель данных клиента
       parameters:
       - name: customer_id
         in: path
@@ -153,12 +602,16 @@ paths:
 
     delete:
       tags:
-      - customers
-      summary: Удаление данных клиента
+      - admin
+      summary: Удаление данных клиента менеджером
       x-dev-notes: Логическое удаление - устанавливается customer.is_deleted = true
-      responses:
-        '200':
-          description: OK
+      operationId: deleteCustomer
+      security:
+      - bearer_JWT: []
+      x-roles-allowed:
+      - customer_manager
+      - manager
+      - admin
       parameters:
       - name: customer_id
         in: path
@@ -166,16 +619,22 @@ paths:
         required: true
         schema:
           type: string
+      responses:
+        '200':
+          description: OK
 
   /customers/{customer_id}/requests:
     get:
       tags:
-      - requests
-      - customers
-      summary: Получение списка Заявок клиента
-      responses:
-        '200':
-          description: OK
+      - admin
+      summary: Получение списка Заявок клиента менеджером
+      operationId: getRequestsByCustomerId
+      security:
+      - bearer_JWT: []
+      x-roles-allowed:
+      - customer_manager
+      - manager
+      - admin
       parameters:
       - name: customer_id
         in: path
@@ -183,37 +642,59 @@ paths:
         required: true
         schema:
           type: string
+      responses:
+        '200':
+          description: список заявок конкретного клиента
 
-  /customers/{customer_id}/trips:
+  /customers/{customer_id}/addresses:
     get:
       tags:
-      - trips
-      - customers
-      summary: Получение списка Поездок клиента
+      - admin
+      summary: Получение списка адресов конкретного клиента менеджером
+      operationId: getAddressesByCustomerId
+      security:
+      - bearer_JWT: []
+      x-roles-allowed:
+      - customer_manager
+      - manager
+      - admin
       parameters:
       - name: customer_id
         in: path
-        required: true
         description: ID
+        required: true
         schema:
           type: string
       responses:
         '200':
-          description: OK
+          description: список адресов клиента
 
   /requests:
     post:
       tags:
-      - requests
+      - admin
+      - me
       summary: Создание заявки
+      operationId: createRequest
+      security:
+      - bearer_JWT: []
       responses:
         '201':
           description: OK
 
     get:
       tags:
-      - requests
+      - admin
+      - me
       summary: Получение списка заявок
+      operationId: getRequests
+      security:
+      - bearer_JWT: []
+      x-roles-allowed:
+      - customer_manager
+      - manager
+      - admin
+      - driver
       parameters:
       - name: request.status_id
         in: query
@@ -225,18 +706,24 @@ paths:
         required: false
         schema:
           type: string
+      - name: request.customer_id
+        in: query
+        required: false
+        schema:
+          type: string
       responses:
         '200':
-          description: OK
+          description: список заявок
 
   /requests/{request_id}:
     get:
       tags:
-      - requests
-      summary: Получение списка Заявок
-      responses:
-        '200':
-          description: OK
+      - admin
+      - me
+      summary: Получение данных Заявки
+      operationId: getRequestsByID
+      security:
+      - bearer_JWT: []
       parameters:
       - name: request_id
         in: path
@@ -244,15 +731,22 @@ paths:
         required: true
         schema:
           type: string
+      responses:
+        '200':
+          description: Модель данных заявки
 
     patch:
       tags:
-      - requests
+      - admin
+      - me
       summary: Изменение деталей Заявки
-      x-notes: Только для правки текстовых полей заявки (например, comment). Не использовать для изменения статуса, времени, адресов, водителя
-      responses:
-        '200':
-          description: OK
+      x-notes: Только для правки текстовых полей заявки (например, comment, phone). Не использовать для изменения статуса, времени, адресов, водителя
+      security:
+      - bearer_JWT: []
+      x-roles-allowed:
+      - customer_manager
+      - manager
+      - admin
       parameters:
       - name: request_id
         in: path
@@ -260,15 +754,25 @@ paths:
         required: true
         schema:
           type: string
+      responses:
+        '200':
+          description: Модель данных заявки
 
     put:
       tags:
-      - requests
+      - admin
+      - drivers
       summary: Изменение статуса Заявки
-      x-notes: Эндпоинт используется в сценариях <Оформление заявки клиентом, Подтверждение заявки диспетчером, Назначение водителя на заявку, Отклонение заявки по таймауту назначения водителя, Отказ водителя от заявки, Отмена заявки>
+      security:
+      - bearer_JWT: []
+      x-roles-allowed:
+      - customer_manager
+      - manager
+      - admin
+      - driver
       responses:
         '200':
-          description: OK
+          description: Модель данных заявки
       parameters:
       - name: request_id
         in: path
@@ -280,11 +784,18 @@ paths:
   /requests/{request_id}/request-status-history:
     get:
       tags:
-      - requests
+      - admin
+      - me
       summary: Чтение истории статусов Заявки
+      security:
+      - bearer_JWT: []
+      x-roles-allowed:
+      - customer_manager
+      - manager
+      - admin
       responses:
         '200':
-          description: OK
+          description: история статусов заявки
       parameters:
       - name: request_id
         in: path
@@ -296,25 +807,60 @@ paths:
   /trips:
     get:
       tags:
-      - trips
+      - drivers
+      - admin
       summary: Получение списка Поездок
+      security:
+      - bearer_JWT: []
+      x-roles-allowed:
+      - customer_manager
+      - manager
+      - admin
+      - driver
+      parameters:
+      - name: request_id
+        in: query
+        description: ID
+        required: false
+        schema:
+          type: string
+      - name: trip_status
+        in: query
+        description: статус поездки
+        required: false
+        schema:
+          type: string
+      - name: driver_id
+        in: query
+        description: ID водителя
+        required: false
+        schema:
+          type: string
       responses:
-        '201':
-          description: OK
+        '200':
+          description: список поездок
     post:
       tags:
-      - trips
+      - drivers
       summary: Создание поездки без заявки
+      security:
+      - bearer_JWT: []
+      x-roles-allowed:
+      - driver
       responses:
         '201':
-          description: OK
+          description: модель данных поездки
 
   /trips/{request_id}/trip:
     post:
       tags:
-      - trips
-      - requests
+      - drivers
+      operationId: createTripByRequest
       summary: Создание поездки по заявке
+      security:
+      - bearer_JWT: []
+      x-roles-allowed:
+      - driver
       parameters:
       - name: request_id
         in: path
@@ -571,11 +1117,17 @@ paths:
   /trips/{trip_id}:
     get:
       tags:
-      - trips
+      - drivers
+      - admin
       summary: Чтение данных поездки
-      responses:
-        '200':
-          description: OK
+      operationId: getTripById
+      security:
+      - bearer_JWT: []
+      x-roles-allowed:
+      - customer_manager
+      - manager
+      - admin
+      - driver
       parameters:
       - name: trip_id
         in: path
@@ -583,15 +1135,22 @@ paths:
         description: ID
         schema:
           type: string
-
+      responses:
+        '200':
+          description: Модель данных поездки
     put:
       tags:
-      - trips
+      - admin
+      - drivers
       summary: Изменение статуса поездки
-      x-dev-notes: Эндпоинт используется в сценариях <Водитель по Заявке прибыл в начальную точку, Водитель отменил поездку по заявке, Водитель начал выполнение Заявки, Водитель по Заявке  прибыл в конечную точку, Водитель без заявки прибыл в конечную точку>
-      responses:
-        '200':
-          description: OK
+      operationId: updateTripStatus
+      security:
+      - bearer_JWT: []
+      x-roles-allowed:
+      - customer_manager
+      - manager
+      - admin
+      - driver
       parameters:
       - name: trip_id
         in: path
@@ -599,11 +1158,15 @@ paths:
         required: true
         schema:
           type: string
+      responses:
+        '200':
+          description: Модель данных поездки
 
   /trips/{trip_id}/trip-status-history:
     get:
       tags:
-      - trips
+      - admin
+      - drivers
       summary: Чтение истории статусов поездки
       responses:
         '200':
@@ -618,7 +1181,7 @@ paths:
   /trip-fares:
     get:
       tags:
-      - trip-fares
+      - admin
       summary: Получение списка тарифов
       responses:
         '200':
@@ -627,7 +1190,8 @@ paths:
   /trip-fares/{trip-fare_id}:
     get:
       tags:
-      - trip-fares
+      - admin
+      - drivers
       summary: Чтение данных Тарифа
       responses:
         '200':
@@ -642,13 +1206,31 @@ paths:
   /addresses:
     get:
       tags:
-      - addresses
+      - admin
       summary: Получение списка адресов
       responses:
         '200':
           description: OK
 
 components:
+
+  securitySchemes:
+    bearer_JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      x-roles:
+      - customer_manager
+      - customer
+      - manager
+      - admin
+      - driver
+
+    temp_token:
+      type: apiKey
+      in: query
+      name: tempToken
+
   schemas:
     trip_info:
       type: object
@@ -791,3 +1373,84 @@ components:
           type: string
           description: человекочитаемый адрес
           example: 'Москва, ул. Новый Арбат, д. 7'
+
+    error_400_invalid_uuid_format:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+              description: Тип ошибки (для трассировки)
+              example: 'invalid_uuid_format'
+            status:
+              type: string
+              description: Код ответа. Нужен для того, чтобы вся модель данных могла быть разобрана позднее без контекста http-ответа
+              example: '400'
+            title:
+              type: string
+              description: Краткое человекочитаемое описание ошибки
+              example: 'Неверный формат UUID'
+            detail:
+              type: string
+              description: Детализация ошибки, может содержать данные из запроса, поясняющие суть ошибки
+              example: 'UUID должен быть в формате GUID, переданное значение "{uuid}" неверно'
+            message:
+              type: string
+              description: Текст ошибки, который может быть выведен пользователю
+              example: 'Что-то пошло не так. Обновите страницу и попробуйте еще раз. Если ошибка сохранится, используйте другой браузер'
+
+    error_400_invalid_state:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+              description: Тип ошибки (для трассировки)
+              example: 'invalid_state'
+            status:
+              type: string
+              description: Код ответа. Нужен для того, чтобы вся модель данных могла быть разобрана позднее без контекста http-ответа
+              example: '400'
+            title:
+              type: string
+              description: Краткое человекочитаемое описание ошибки
+              example: 'Неверный state параметр'
+            detail:
+              type: string
+              description: Детализация ошибки, может содержать данные из запроса, поясняющие суть ошибки
+              example: 'State параметр не совпадает с сохраненным значением для сессии'
+            message:
+              type: string
+              description: Текст ошибки, который может быть выведен пользователю
+              example: 'Попробуйте другой способ входа'
+
+    error_400_missing_code:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            type:
+              type: string
+              description: Тип ошибки (для трассировки)
+              example: 'missing_code'
+            status:
+              type: string
+              description: Код ответа. Нужен для того, чтобы вся модель данных могла быть разобрана позднее без контекста http-ответа
+              example: '400'
+            title:
+              type: string
+              description: Краткое человекочитаемое описание ошибки
+              example: 'Отсутствует код авторизации'
+            detail:
+              type: string
+              description: Детализация ошибки, может содержать данные из запроса, поясняющие суть ошибки
+              example: 'Параметр code обязателен для обмена на токены'
+            message:
+              type: string
+              description: Текст ошибки, который может быть выведен пользователю
+              example: 'Попробуйте другой способ входа'
