@@ -24,6 +24,7 @@ Full-stack бизнес и системный анализ для pet-project "�
         - [Контракты](#контракты)
       - [AsyncAPI](#asyncapi)
         - [Топики Kafka](#топики-kafka)
+        - [Контракты RabbitMQ](#контракты-rabbitmq)
     - [Модели данных](#модели-данных-1)
     - [Требования к логгированию](#требования-к-логгированию)
   - [🧳 Инструменты](#-инструменты)
@@ -146,6 +147,10 @@ Full-stack бизнес и системный анализ для pet-project "�
 - [fare.preride.search](https://docs.google.com/document/d/1h8Sf4q1hY8SqTZ3Ppp-ZgKdLWWDwUGCsE9_hD-CYBaE/edit?usp=sharing)
 - [fare.preride.search.result](https://docs.google.com/document/d/1L6Rt3uK6TNhK9PFDVZX03ZUCZvqrOLqvEagYfu_TvWw/edit?usp=sharing)
 - [ride.preride.created](https://docs.google.com/document/d/1gb-u3CAfTpR9nLDw0eh4itRSgBEWPMa5w8Bb5h4VZ9Q/edit?usp=sharing)
+
+##### Контракты RabbitMQ
+
+- [RabbitMQ Trip v1.1](https://docs.google.com/document/d/1Kbn93PHuyKnpXsAPzQCR0Cr31ZL0diSwc4nHb24H9_4/edit?usp=sharing)
 
 ### Модели данных
 
